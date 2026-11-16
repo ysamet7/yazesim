@@ -1,0 +1,48 @@
+{
+  "name": "@yazesim/worker",
+  "version": "0.0.0",
+  "private": true,
+  "description": "YazeSim background worker (NestJS + BullMQ): chain watching, summaries, reconciliation and scheduled jobs",
+  "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "build": "nest build",
+    "dev": "nest start --watch --preserveWatchOutput",
+    "start": "node --enable-source-maps dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run --project unit",
+    "test:e2e": "vitest run --project e2e"
+  },
+  "dependencies": {
+    "@nestjs/common": "catalog:",
+    "@nestjs/core": "catalog:",
+    "@nestjs/platform-express": "catalog:",
+    "@yazesim/database": "workspace:*",
+    "@yazesim/server": "workspace:*",
+    "@yazesim/shared": "workspace:*",
+    "bullmq": "catalog:",
+    "helmet": "catalog:",
+    "ioredis": "catalog:",
+    "nestjs-pino": "catalog:",
+    "pino": "catalog:",
+    "pino-http": "catalog:",
+    "reflect-metadata": "catalog:",
+    "rxjs": "catalog:",
+    "viem": "catalog:"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "catalog:",
+    "@nestjs/testing": "catalog:",
+    "@types/express": "catalog:",
+    "@types/node": "catalog:",
+    "@types/supertest": "catalog:",
+    "@yazesim/config": "workspace:*",
+    "@yazesim/test-support": "workspace:*",
+    "eslint": "catalog:",
+    "pino-pretty": "catalog:",
+    "supertest": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

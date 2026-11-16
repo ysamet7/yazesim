@@ -14,4 +14,9 @@ Bir oturumda öğrenilen ve sonraki oturumların yeniden keşfetmemesi gereken �
 
 ## Dersler
 
-- (henüz yok)
+- zsh'de `--include=*.ts` ve `echo ===` gibi `=`/glob içeren argümanlar hata verir; tırnak kullan. macOS'ta `timeout` komutu yok.
+- Bash aracında karmaşık heredoc'lu komutlar güvenlik denetimine takılabilir; dosya yazmak için Write aracını kullan.
+- `.env` dosyaları elle yazılmaz: `pnpm bootstrap --only=env` üretir (yeni `.env.example` anahtarı eklendiğinde de bu çalıştırılır).
+- BullMQ: Redis'e hiç bağlanamamış Worker/Queue için `disconnect()` sonsuza dek bekler; `close(true)` kullan (apps/worker `closeWithin`).
+- Zod 4'te `.superRefine` şemayı sarmaz; `schema.shape` hâlâ okunur (env örneği ↔ şema testi buna dayanır).
+- pnpm `minimumReleaseAge` 24 saat: bir günden yeni sürüm kurulmaz; bir önceki sürümü seç.
