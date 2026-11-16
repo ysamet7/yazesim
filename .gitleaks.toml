@@ -1,0 +1,5 @@
+# gitleaks (pre-commit hook and CI, full history): the default rule set.
+# Nothing is allowlisted: the repository is public (CLAUDE.md golden rule 1),
+# and a value that looks like a key is treated as one until proven otherwise.
+[extend]
+useDefault = true

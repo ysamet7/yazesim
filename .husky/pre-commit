@@ -1,0 +1,15 @@
+# Golden rules 3 and 4: nothing from external/ and no review report ever enters git,
+# not even with `git add -f`.
+if git diff --cached --name-only | grep -Eq '^external/|inceleme-raporu'; then
+  echo "external/ veya inceleme raporu commit'e eklenemez (CLAUDE.md altın kural 3 ve 4)." >&2
+  exit 1
+fi
+
+pnpm exec lint-staged
+
+# Golden rule 1: no secret reaches a commit.
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "gitleaks bulunamadı. Kurulum: brew install gitleaks (docs/runbooks/YEREL-GELISTIRME.md)." >&2
+  exit 1
+fi
+gitleaks git --pre-commit --staged --redact --no-banner --log-level warn

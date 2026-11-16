@@ -1,0 +1,6 @@
+{
+  "$comment": "Single source of truth for tool versions that npm does not install. pnpm bootstrap checks them; a test keeps CI and docker-compose in step.",
+  "node": "24.22.2",
+  "foundry": "1.8.5",
+  "gitleaks": "8.30.1"
+}

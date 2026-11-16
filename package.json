@@ -1,0 +1,39 @@
+{
+  "name": "yazesim",
+  "version": "0.0.0",
+  "private": true,
+  "description": "YazeSim: NoR ile ödenen yapay zekâ sohbet ve simülasyon uygulaması",
+  "license": "UNLICENSED",
+  "type": "module",
+  "packageManager": "pnpm@12.11.2",
+  "engines": {
+    "node": ">=24.22.0 <25"
+  },
+  "scripts": {
+    "bootstrap": "node scripts/src/bootstrap.ts",
+    "dev": "turbo run dev --filter=@yazesim/api --filter=@yazesim/worker --filter=@yazesim/web",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "verify": "node scripts/src/verify.ts",
+    "infra:up": "node scripts/src/infra.ts up",
+    "infra:down": "node scripts/src/infra.ts down",
+    "infra:logs": "node scripts/src/infra.ts logs",
+    "infra:reset": "node scripts/src/infra.ts reset",
+    "chain:local": "node scripts/src/chain-local.ts",
+    "repo:guard": "node scripts/src/repo-guard.ts",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "21.2.4",
+    "@commitlint/config-conventional": "21.2.4",
+    "husky": "9.1.7",
+    "lint-staged": "17.6.0",
+    "prettier": "catalog:",
+    "turbo": "2.11.11",
+    "typescript": "catalog:"
+  }
+}

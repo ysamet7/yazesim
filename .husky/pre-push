@@ -1,0 +1,12 @@
+# Golden rule 8: nothing is pushed directly to main; every change goes through a
+# branch and a pull request. Creating main on an empty remote (the very first
+# push) is the only exception.
+zero_sha="0000000000000000000000000000000000000000"
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [ "$remote_ref" = "refs/heads/main" ] && [ "$remote_sha" != "$zero_sha" ]; then
+    echo "main dalına doğrudan push yasak (CLAUDE.md altın kural 8)." >&2
+    echo "Bir dal açın, push edin ve PR gönderin." >&2
+    exit 1
+  fi
+done
+exit 0

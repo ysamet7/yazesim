@@ -1,0 +1,24 @@
+# Every text file is stored and checked out with LF on all platforms. Solidity
+# sources must be byte-identical across machines: CRLF changes the metadata
+# hash and therefore the compiled bytecode.
+* text=auto eol=lf
+
+*.sol   text eol=lf linguist-language=Solidity
+*.sh    text eol=lf
+
+# Binary assets
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.avif  binary
+*.ico   binary
+*.pdf   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+
+# Generated files: collapsed in diffs
+pnpm-lock.yaml linguist-generated=true
