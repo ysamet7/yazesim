@@ -11,7 +11,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@yazesim/shared": "workspace:*"
+    "@yazesim/shared": "workspace:*",
+    "viem": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",

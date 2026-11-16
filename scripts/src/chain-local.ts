@@ -1,13 +1,13 @@
 /**
- * `pnpm chain:local` — makes sure the local Anvil chain is running and is the
- * chain the apps expect (31337). The test NoR deployment joins in the
- * contracts step of phase 0.
+ * `pnpm chain:local` — makes sure the local Anvil chain is running, deploys
+ * the test NoR token when the chain has none (a chain that already has it is
+ * left alone) and writes its address into the API and worker env files.
  */
 import { compose } from './lib/compose.ts';
 import { CommandError } from './lib/exec.ts';
-import { readInfraEnv, rpcUrl } from './lib/local-env.ts';
+import { APP_ENV_FILES, ensureAppEnv, readEnvFile, readInfraEnv, rpcUrl } from './lib/local-env.ts';
 import { log } from './lib/log.ts';
-import { LOCAL_CHAIN_ID, rpcChainId } from './lib/rpc.ts';
+import { ensureMockNoR } from './lib/mock-nor.ts';
 
 async function main(): Promise<void> {
   const infra = readInfraEnv();
@@ -18,13 +18,13 @@ async function main(): Promise<void> {
   }
   await compose(['up', '--detach', '--wait', 'anvil']);
   const url = rpcUrl(infra);
-  const chainId = await rpcChainId(url);
-  if (chainId !== LOCAL_CHAIN_ID) {
-    throw new Error(
-      `Anvil beklenen zincir kimliğini (${String(LOCAL_CHAIN_ID)}) değil ${String(chainId)} döndürdü.`,
-    );
+  log.ok(`Anvil çalışıyor: ${url}`);
+  const result = await ensureMockNoR(url, readEnvFile('apps/api/.env')?.NOR_TOKEN_ADDRESS);
+  log.ok(`Sahte NoR ${result.deployed ? 'yayınlandı' : 'zaten yayında'}: ${result.address}`);
+  for (const file of APP_ENV_FILES.filter((f) => f.app === 'api' || f.app === 'worker')) {
+    ensureAppEnv(file, infra, { norTokenAddress: result.address });
   }
-  log.ok(`Anvil çalışıyor: ${url} (chainId ${String(LOCAL_CHAIN_ID)})`);
+  log.info('Adres apps/api/.env ve apps/worker/.env dosyalarına yazıldı.');
 }
 
 try {

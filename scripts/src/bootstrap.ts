@@ -17,6 +17,7 @@ import {
   APP_ENV_FILES,
   ensureAppEnv,
   ensureInfraEnv,
+  readEnvFile,
   readInfraEnv,
   rpcUrl,
   type EnvValues,
@@ -171,9 +172,10 @@ const steps: readonly Step[] = [
   },
   {
     id: 'chain',
-    title: 'Yerel zincir kontrol ediliyor',
+    title: 'Yerel zincire sahte NoR yayınlanıyor',
     run: async (context) => {
-      const url = rpcUrl(requireInfra(context));
+      const infra = requireInfra(context);
+      const url = rpcUrl(infra);
       const chainId = await rpcChainId(url);
       if (chainId !== LOCAL_CHAIN_ID) {
         throw new BootstrapError(
@@ -181,6 +183,34 @@ const steps: readonly Step[] = [
         );
       }
       log.ok(`Anvil hazır (chainId ${String(LOCAL_CHAIN_ID)}, hardfork cancun)`);
+      try {
+        // A plain `git clone` leaves lib/forge-std empty; forge needs it. No-op when present.
+        await run('git', ['submodule', 'update', '--init', '--recursive'], { quiet: true });
+      } catch (error) {
+        throw new BootstrapError(
+          'Kontrat kütüphanesi (forge-std alt modülü) alınamadı.',
+          'İnternet bağlantısını kontrol edip `git submodule update --init --recursive` çalıştırın.',
+          { cause: error },
+        );
+      }
+      // Loaded here: it needs viem, which the install step provides.
+      const { ensureMockNoR } = await import('./lib/mock-nor.ts');
+      const current = readEnvFile('apps/api/.env')?.NOR_TOKEN_ADDRESS;
+      let result;
+      try {
+        result = await ensureMockNoR(url, current);
+      } catch (error) {
+        throw new BootstrapError(
+          'Sahte NoR yerel zincire yayınlanamadı.',
+          'Zinciri baştan kurmak için: pnpm infra:reset --yes && pnpm bootstrap',
+          { cause: error },
+        );
+      }
+      log.ok(`Sahte NoR ${result.deployed ? 'yayınlandı' : 'zaten yayında'}: ${result.address}`);
+      for (const file of APP_ENV_FILES.filter((f) => f.app === 'api' || f.app === 'worker')) {
+        ensureAppEnv(file, infra, { norTokenAddress: result.address });
+      }
+      log.ok('NOR_TOKEN_ADDRESS apps/api/.env ve apps/worker/.env dosyalarına yazıldı');
     },
   },
 ];
@@ -219,6 +249,7 @@ function printSummary(infra: EnvValues | null): void {
     ['API', 'http://localhost:4200/api/v1/saglik'],
     ['İşçi', 'http://localhost:4210/saglik'],
     ['Anvil RPC', infra ? rpcUrl(infra) : 'http://127.0.0.1:8546'],
+    ['Sahte NoR', readEnvFile('apps/api/.env')?.NOR_TOKEN_ADDRESS ?? '—'],
   ];
   for (const [name, url] of rows) log.info(`${(name ?? '').padEnd(12)} ${url ?? ''}`);
   log.info('\nSıradaki komut:  pnpm dev');
