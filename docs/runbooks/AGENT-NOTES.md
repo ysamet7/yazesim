@@ -20,3 +20,7 @@ Bir oturumda öğrenilen ve sonraki oturumların yeniden keşfetmemesi gereken �
 - BullMQ: Redis'e hiç bağlanamamış Worker/Queue için `disconnect()` sonsuza dek bekler; `close(true)` kullan (apps/worker `closeWithin`).
 - Zod 4'te `.superRefine` şemayı sarmaz; `schema.shape` hâlâ okunur (env örneği ↔ şema testi buna dayanır).
 - pnpm `minimumReleaseAge` 24 saat: bir günden yeni sürüm kurulmaz; bir önceki sürümü seç.
+- pino: mesaj metni `formatters.log`'dan geçmez (`hooks.logMethod` maskeler); `logger.child()` alanları `formatters.bindings`'i atlar (`onChild` maskeler). Yeni log yolu eklerken `pino-options.spec.ts`'e test ekle.
+- gitleaks test dosyasındaki parola/anahtar biçimli sabitleri yakalar; test değerini çalışma anında üret (`randomBytes(...).toString('base64url')`).
+- macOS git `core.ignorecase=true`: yol kontrolleri büyük/küçük harf duyarsız olmalı (`External/` = `external/`).
+- Veritabanı: uygulama `yazesim_app` ile bağlanır; yeni tabloyu migrasyonda `yazesim_app_rw`'ye GRANT etmeyi unutma (yalnız eklenen tabloda SELECT, INSERT).
