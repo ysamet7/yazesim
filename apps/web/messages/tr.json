@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "title": "YazeSim",
+    "description": "Sorununu yaz, işini bilen bir uzmanla konuş. Elektrikten hukuka, edebiyattan iş mülakatı provasına."
+  },
+  "brand": {
+    "name": "YazeSim",
+    "family": "NoRiba.Finance ailesinden"
+  },
+  "home": {
+    "status": "Hazırlanıyor",
+    "title": "Sorununu yaz, işini bilen biriyle konuş.",
+    "lead": "Ev tesisatından kira sözleşmesine, bir romanın ilk sayfasından iş mülakatı provasına kadar; her konuda doğrudan ve somut konuşan yapay zekâ rolleri.",
+    "sectionsLabel": "Neler olacak",
+    "sections": {
+      "experts": {
+        "title": "Uzmanlar",
+        "body": "Elektrik, sıhhi tesisat, hukuk, sağlık, vergi, yazılım ve daha fazlası. Türkiye’nin mevzuatını ve piyasasını bilen, lafı dolandırmayan meslek sahipleri."
+      },
+      "literature": {
+        "title": "Edebiyat",
+        "body": "Türk ve dünya edebiyatının büyük isimleriyle sohbet, birlikte yazma ve metnine dürüst bir okuma."
+      },
+      "simulations": {
+        "title": "Simülasyonlar",
+        "body": "Mülakat, pazarlık, zor bir konuşma ya da yabancı dil pratiği. Gerçeğinden önce prova."
+      }
+    },
+    "payment": "Kullandığın kadar NoR ile ödersin; her mesajın yaklaşık maliyetini önceden görürsün."
+  },
+  "notFound": {
+    "title": "Bu sayfa yok",
+    "body": "Adres yanlış yazılmış ya da sayfa kaldırılmış olabilir.",
+    "home": "Ana sayfaya dön"
+  },
+  "error": {
+    "title": "Bir şeyler ters gitti",
+    "body": "Sayfa yüklenemedi. Biraz sonra yeniden dene.",
+    "retry": "Yeniden dene"
+  },
+  "errors": {
+    "VALIDATION_FAILED": "Gönderilen bilgiler geçerli değil.",
+    "UNAUTHENTICATED": "Devam etmek için giriş yap.",
+    "FORBIDDEN": "Bu işlem için yetkin yok.",
+    "NOT_FOUND": "Aradığın şey bulunamadı.",
+    "CONFLICT": "Bu işlem şu anki durumla çakışıyor; sayfayı yenileyip tekrar dene.",
+    "PAYLOAD_TOO_LARGE": "Gönderilen içerik çok büyük.",
+    "RATE_LIMITED": "Çok sık denedin; biraz bekleyip tekrar dene.",
+    "INTERNAL_ERROR": "Beklenmeyen bir hata oldu. Biraz sonra tekrar dene.",
+    "SERVICE_UNAVAILABLE": "Hizmet şu an yanıt vermiyor. Biraz sonra tekrar dene.",
+    "CHAIN_NOT_SUPPORTED": "Bu ağ desteklenmiyor.",
+    "MAINNET_LOCKED": "Ana ağ işlemleri şu an kapalı."
+  }
+}

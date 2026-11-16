@@ -1,0 +1,78 @@
+packages:
+  - apps/*
+  - packages/*
+  - contracts
+  - scripts
+
+# Exact versions only: every upgrade arrives as a reviewed pull request (Dependabot).
+saveExact: true
+savePrefix: ''
+engineStrict: true
+
+# Supply-chain guards: releases younger than a day are refused (a hijacked
+# release is usually caught within hours), and so is a package whose
+# publishing trust level dropped compared with its earlier releases.
+minimumReleaseAge: 1440
+trustPolicy: no-downgrade
+trustPolicyIgnoreAfter: 43200
+
+# Install scripts run only for these packages; pnpm blocks every other one.
+allowBuilds:
+  '@parcel/watcher': true
+  '@prisma/engines': true
+  '@swc/core': true
+  '@tailwindcss/oxide': true
+  esbuild: true
+  prisma: true
+  sharp: true
+  unrs-resolver: true
+  # Optional native speed-ups or telemetry: not needed.
+  '@scarf/scarf': false
+  msgpackr-extract: false
+
+# Next.js' ESLint plugins still declare ESLint 9 as their peer; they run on 10.
+peerDependencyRules:
+  allowedVersions:
+    eslint-plugin-import>eslint: '10'
+    eslint-plugin-jsx-a11y>eslint: '10'
+    eslint-plugin-react>eslint: '10'
+
+# One version per shared dependency across the workspace.
+catalog:
+  '@nestjs/cli': 12.0.13
+  '@nestjs/common': 12.5.0
+  '@nestjs/core': 12.5.0
+  '@nestjs/platform-express': 12.5.0
+  '@nestjs/testing': 12.5.0
+  '@prisma/adapter-pg': 7.10.1
+  '@prisma/client': 7.10.1
+  '@types/express': 5.0.6
+  '@types/node': 24.19.2
+  '@types/pg': 8.23.1
+  '@types/react': 19.3.0
+  '@types/react-dom': 19.3.0
+  '@types/supertest': 7.2.1
+  '@vitest/coverage-v8': 5.1.0
+  bullmq: 6.7.6
+  eslint: 10.15.0
+  fast-check: 4.10.2
+  helmet: 8.3.0
+  ioredis: 6.0.0
+  nestjs-pino: 5.3.1
+  pg: 8.23.1
+  pino: 10.4.0
+  pino-http: 11.0.0
+  pino-pretty: 13.2.0
+  prettier: 3.10.1
+  prisma: 7.10.1
+  react: 19.3.1
+  react-dom: 19.3.1
+  reflect-metadata: 0.2.2
+  rxjs: 7.8.2
+  supertest: 7.3.2
+  # TypeScript 7 (the native compiler) has no compiler API yet that
+  # typescript-eslint and the Nest CLI need; 6.0 is the latest that works.
+  typescript: 6.0.3
+  viem: 2.57.20
+  vitest: 5.1.0
+  zod: 4.6.7

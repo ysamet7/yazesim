@@ -1,0 +1,24 @@
+{
+  "name": "@yazesim/scripts",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Repository tooling: one-command bootstrap, local infrastructure, verification and repository guards",
+  "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@yazesim/shared": "workspace:*",
+    "viem": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@yazesim/config": "workspace:*",
+    "eslint": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

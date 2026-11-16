@@ -1,0 +1,82 @@
+# Monthly, grouped dependency updates. Versions are pinned exactly; every
+# update arrives as a pull request that must pass CI. Security updates still
+# arrive as soon as an advisory is published.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+      time: '06:00'
+      timezone: Europe/Istanbul
+    open-pull-requests-limit: 10
+    # pnpm refuses releases younger than 24 hours (minimumReleaseAge); waiting
+    # two days keeps Dependabot from proposing versions the install would reject.
+    cooldown:
+      default-days: 2
+    labels: [dependencies]
+    commit-message:
+      prefix: chore(deps)
+    ignore:
+      # Node.js types follow the runtime's major (.nvmrc, the current LTS).
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+    groups:
+      # Audited contract code: its own pull request, reviewed by hand.
+      openzeppelin:
+        patterns: ['@openzeppelin/*']
+      nestjs:
+        patterns: ['@nestjs/*', 'nestjs-pino', 'pino', 'pino-http', 'pino-pretty']
+      next-react:
+        patterns:
+          [
+            'next',
+            'react',
+            'react-dom',
+            '@types/react',
+            '@types/react-dom',
+            'eslint-config-next',
+            'next-intl',
+          ]
+      prisma:
+        patterns: ['prisma', '@prisma/*']
+      lint-format:
+        patterns:
+          [
+            'eslint',
+            '@eslint/*',
+            'typescript-eslint',
+            'globals',
+            'eslint-config-prettier',
+            'prettier',
+            'prettier-plugin-*',
+          ]
+      testing:
+        patterns: ['vitest', '@vitest/*', 'fast-check', 'supertest', '@types/supertest']
+      minor-and-patch:
+        update-types: [minor, patch]
+        exclude-patterns: ['@openzeppelin/*']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+      time: '06:00'
+      timezone: Europe/Istanbul
+    labels: [dependencies, ci]
+
+  - package-ecosystem: docker-compose
+    directory: /infra/docker
+    schedule:
+      interval: monthly
+      time: '06:00'
+      timezone: Europe/Istanbul
+    labels: [dependencies, infra]
+
+  - package-ecosystem: gitsubmodule
+    directory: /
+    schedule:
+      interval: monthly
+      time: '06:00'
+      timezone: Europe/Istanbul
+    labels: [dependencies, contracts]

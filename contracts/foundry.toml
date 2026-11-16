@@ -1,0 +1,55 @@
+# YazeSim contracts — Foundry configuration.
+# Only test contracts live here: YazeSim never deploys to Avalanche mainnet,
+# where the real NoR token already exists. Values that affect bytecode are
+# pinned so every machine and CI produce the same artifacts.
+
+[profile.default]
+src = "src"
+test = "test"
+script = "script"
+out = "out"
+cache_path = "cache"
+libs = ["lib", "node_modules"]
+remappings = [
+    "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+    "forge-std/=lib/forge-std/src/",
+]
+auto_detect_remappings = false
+
+# Compiler. Avalanche C-Chain supports Cancun and not later forks; Foundry's
+# default target is newer, so it is set explicitly.
+solc_version = "0.8.37"
+auto_detect_solc = false
+evm_version = "cancun"
+via_ir = false
+optimizer = true
+optimizer_runs = 200
+bytecode_hash = "ipfs"
+cbor_metadata = true
+# The only known bug in solc 0.8.37 (YulOptimizerKnowledgeBaseStaleBookkeeping,
+# fixed in 0.8.38) requires the Yul optimizer: keep it off.
+optimizer_details = { yul = false }
+
+# Treat compiler warnings as errors.
+deny = "warnings"
+
+# Foundry 1.8 links tests dynamically by default; with vm.expectRevert the
+# first expected revert then ends the whole test while it still passes. Off,
+# `new` is a real CREATE.
+dynamic_test_linking = false
+
+# Scripts and tests get no file system access.
+fs_permissions = []
+
+[fuzz]
+runs = 1000
+
+[fmt]
+line_length = 100
+tab_width = 4
+bracket_spacing = false
+int_types = "long"
+multiline_func_header = "attributes_first"
+quote_style = "double"
+number_underscore = "thousands"
+sort_imports = true

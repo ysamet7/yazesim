@@ -1,0 +1,41 @@
+name: Hata bildirimi
+description: Beklendiği gibi çalışmayan bir şey
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Güvenlik açıklarını burada değil, SECURITY.md'deki özel bildirim yoluyla iletin.
+  - type: textarea
+    id: what
+    attributes:
+      label: Ne oldu?
+      description: Gördüğünüz davranış. Sohbet içeriği, kişisel veri, cüzdan anahtarı veya şifre paylaşmayın.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Ne bekliyordunuz?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Nasıl yeniden üretilir?
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Ortam
+      options: [Yerel, Staging (Fuji)]
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Ek bilgi
+      description: Tarayıcı, cihaz, istek kimliği (requestId), ekran görüntüsü.

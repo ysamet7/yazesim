@@ -1,0 +1,50 @@
+// YazeSim database schema (docs/plans/yazesim-v1.md §4).
+//
+// Conventions: tables and columns are snake_case; every table has created_at
+// (append-only tables nothing else) and mutable ones updated_at. NoR amounts
+// are Decimal(78, 0) in the token's smallest unit and credits are integer
+// milli-credits (golden rule 6). Chat content, titles, summaries and memory
+// are stored only as application-layer ciphertext (golden rule 7).
+// Constraints Prisma cannot express (append-only triggers, checks, partial
+// unique indexes) live in the migrations' SQL.
+// Privileges: the apps connect as a member of yazesim_app_rw, not as the
+// owner. Every migration that creates a table grants it to yazesim_app_rw
+// (append-only tables: SELECT and INSERT only); test/privileges.db-spec.ts
+// fails for a table without a grant.
+
+generator client {
+  provider               = "prisma-client"
+  output                 = "../src/generated/prisma"
+  runtime                = "nodejs"
+  moduleFormat           = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension    = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── Operations ───────────────────────────────────────────────────────────
+
+/// Security and administration events: sign-ins, role versions, prices,
+/// approvals. Append-only: triggers refuse UPDATE, DELETE and TRUNCATE for
+/// every role, and the application role can neither change nor drop those
+/// triggers. Only the owner role (migrations, kept off the application
+/// servers) could remove them, and only with a reviewed migration.
+model AuditLog {
+  id        BigInt   @id @default(autoincrement())
+  /// Who acted: a user id, an administrator's wallet, or `system:<job>`.
+  actor     String   @db.VarChar(120)
+  /// What happened, dotted and lower case, e.g. `persona.version.published`.
+  action    String   @db.VarChar(120)
+  /// What it happened to, e.g. `persona:elektrik-tesisati@3`.
+  target    String?  @db.VarChar(200)
+  /// Non-personal details only: ids, versions, before and after of a setting.
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@index([createdAt])
+  @@index([actor, createdAt])
+  @@map("audit_log")
+}

@@ -1,0 +1,22 @@
+name: Öneri
+description: Yeni bir özellik, rol veya iyileştirme önerisi
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Hangi sorunu çözüyor?
+      description: Kullanıcının bugün yaşadığı zorluk.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Öneri
+      description: Nasıl çalışmalı? Varsa örnek ekran veya akış.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Düşünülen alternatifler

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "env": ["FOUNDRY_PROFILE"],
+      "outputs": ["out/**", "cache/**"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "env": ["FOUNDRY_PROFILE"],
+      "outputs": []
+    },
+    "lint": {
+      "dependsOn": ["^build"]
+    }
+  }
+}

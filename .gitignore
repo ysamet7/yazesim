@@ -19,3 +19,19 @@ dist/
 coverage/
 *.log
 .DS_Store
+
+# Tooling caches and generated code
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+packages/database/src/generated/
+playwright-report/
+test-results/
+
+# Foundry build output (forge-std is a git submodule under contracts/lib)
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+
+# Local Claude Code settings (launch configs, permissions)
+.claude/
