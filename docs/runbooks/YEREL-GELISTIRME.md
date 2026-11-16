@@ -29,7 +29,7 @@ Adımlar (her biri tekrar çalıştırılabilir; var olan değerler ve veriler k
 2. `install` — `pnpm install --frozen-lockfile`
 3. `env` — `.env.example` şablonlarından yerel `.env` dosyaları: `infra/docker/.env`, `apps/api/.env`, `apps/worker/.env`, `apps/web/.env.local`, `packages/database/.env`. Parolalar ve şifreleme anahtarları rastgele üretilir, dosyalara `0600` izniyle yazılır, ekrana basılmaz.
 4. `docker` — PostgreSQL (5433), Redis (6380), Anvil (8546); hepsi yalnız `127.0.0.1`'de
-5. `db` — migrasyonlar ve Prisma istemcisi
+5. `db` — migrasyonlar, Prisma istemcisi ve uygulamanın kısıtlı veritabanı kullanıcısı (`yazesim_app`). API ve işçi bu kullanıcıyla bağlanır; tablo sahibi kullanıcı (`yazesim`) yalnız migrasyonlarda ve testlerde kullanılır.
 6. `chain` — yerel zincire test NoR'u yayınlama; adres API ve işçi `.env` dosyalarına yazılır
 
 Yalnız bazı adımlar: `pnpm bootstrap --only=env,db` · bazılarını atlamak: `pnpm bootstrap --skip=tools`.

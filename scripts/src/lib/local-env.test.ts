@@ -12,6 +12,8 @@ const INFRA = {
   POSTGRES_USER: 'yazesim',
   POSTGRES_PASSWORD: 'p@ss/w:rd',
   POSTGRES_DB: 'yazesim',
+  POSTGRES_APP_USER: 'yazesim_app',
+  POSTGRES_APP_PASSWORD: 'app&pw',
   POSTGRES_PORT: '5433',
   REDIS_PASSWORD: 'r#dis',
   REDIS_PORT: '6380',
@@ -32,13 +34,33 @@ function appFile(app: string): AppEnvFile {
 
 describe('connection URLs', () => {
   it('escape credentials and use the IPv4 loopback address', () => {
-    expect(databaseUrl(INFRA)).toBe('postgresql://yazesim:p%40ss%2Fw%3Ard@127.0.0.1:5433/yazesim');
+    expect(databaseUrl(INFRA, 'owner')).toBe(
+      'postgresql://yazesim:p%40ss%2Fw%3Ard@127.0.0.1:5433/yazesim',
+    );
+    expect(databaseUrl(INFRA, 'app')).toBe(
+      'postgresql://yazesim_app:app%26pw@127.0.0.1:5433/yazesim',
+    );
     expect(redisUrl(INFRA)).toBe('redis://:r%23dis@127.0.0.1:6380');
     expect(rpcUrl(INFRA)).toBe('http://127.0.0.1:8546');
   });
 
   it('refuse an incomplete infra file', () => {
-    expect(() => databaseUrl({ ...INFRA, POSTGRES_PASSWORD: '' })).toThrow(/POSTGRES_PASSWORD/u);
+    expect(() => databaseUrl({ ...INFRA, POSTGRES_PASSWORD: '' }, 'owner')).toThrow(
+      /POSTGRES_PASSWORD/u,
+    );
+    expect(() => databaseUrl({ ...INFRA, POSTGRES_APP_PASSWORD: '' }, 'app')).toThrow(
+      /POSTGRES_APP_PASSWORD/u,
+    );
+  });
+
+  it('give the API and the worker the restricted role and migrations the owner', () => {
+    const user = (app: string): string =>
+      new URL(appFile(app).managed(INFRA, {}).DATABASE_URL ?? '').username;
+    expect([user('api'), user('worker'), user('database')]).toEqual([
+      'yazesim_app',
+      'yazesim_app',
+      'yazesim',
+    ]);
   });
 });
 

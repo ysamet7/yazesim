@@ -23,6 +23,7 @@ export function ensureInfraEnv(): EnsureEnvResult {
     targetPath: repoPath(INFRA_ENV_FILE),
     generate: {
       POSTGRES_PASSWORD: () => randomSecret(),
+      POSTGRES_APP_PASSWORD: () => randomSecret(),
       REDIS_PASSWORD: () => randomSecret(),
     },
   });
@@ -53,9 +54,17 @@ function required(infra: EnvValues, key: string): string {
   return value;
 }
 
-export function databaseUrl(infra: EnvValues): string {
-  const user = encodeURIComponent(required(infra, 'POSTGRES_USER'));
-  const password = encodeURIComponent(required(infra, 'POSTGRES_PASSWORD'));
+/**
+ * Who connects: `owner` runs migrations and creates test databases; `app` is
+ * the restricted role the API and the worker use (no DDL, append-only tables
+ * read and insert only; prisma/migrations/*_app_role).
+ */
+export type DatabaseRole = 'owner' | 'app';
+
+export function databaseUrl(infra: EnvValues, role: DatabaseRole): string {
+  const prefix = role === 'owner' ? 'POSTGRES' : 'POSTGRES_APP';
+  const user = encodeURIComponent(required(infra, `${prefix}_USER`));
+  const password = encodeURIComponent(required(infra, `${prefix}_PASSWORD`));
   return `postgresql://${user}:${password}@${HOST}:${required(infra, 'POSTGRES_PORT')}/${required(infra, 'POSTGRES_DB')}`;
 }
 
@@ -93,7 +102,7 @@ export const APP_ENV_FILES: readonly AppEnvFile[] = [
     targetPath: 'apps/api/.env',
     managed: (infra, chain) => ({
       CORS_ORIGINS: LOCAL_WEB_ORIGIN,
-      DATABASE_URL: databaseUrl(infra),
+      DATABASE_URL: databaseUrl(infra, 'app'),
       REDIS_URL: redisUrl(infra),
       RPC_URL: rpcUrl(infra),
       ...norToken(chain),
@@ -110,7 +119,7 @@ export const APP_ENV_FILES: readonly AppEnvFile[] = [
     examplePath: 'apps/worker/.env.example',
     targetPath: 'apps/worker/.env',
     managed: (infra, chain) => ({
-      DATABASE_URL: databaseUrl(infra),
+      DATABASE_URL: databaseUrl(infra, 'app'),
       REDIS_URL: redisUrl(infra),
       RPC_URL: rpcUrl(infra),
       ...norToken(chain),
@@ -120,7 +129,7 @@ export const APP_ENV_FILES: readonly AppEnvFile[] = [
     app: 'database',
     examplePath: 'packages/database/.env.example',
     targetPath: 'packages/database/.env',
-    managed: (infra) => ({ DATABASE_URL: databaseUrl(infra) }),
+    managed: (infra) => ({ DATABASE_URL: databaseUrl(infra, 'owner') }),
   },
   {
     app: 'web',

@@ -14,9 +14,12 @@ import { PrismaClient, prismaClientOptions } from '../../src/index.js';
 const PACKAGE_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
 export interface TestDatabase {
+  /** The owner's connection to the new database (migrations, DDL). */
   readonly url: string;
   readonly prisma: PrismaClient;
   drop(): Promise<void>;
+  /** Drops a login role a test created (roles are server-wide, not per database). */
+  dropRole(role: string): Promise<void>;
 }
 
 function baseUrl(): URL {
@@ -61,5 +64,13 @@ export async function createTestDatabase(): Promise<TestDatabase> {
     await drop();
     throw error;
   }
-  return { url, prisma, drop };
+  const dropRole = async (role: string): Promise<void> => {
+    const owner = new PrismaClient(prismaClientOptions(withDatabase(base, 'postgres')));
+    try {
+      await owner.$executeRawUnsafe(`DROP ROLE IF EXISTS "${role.replaceAll('"', '""')}"`);
+    } finally {
+      await owner.$disconnect();
+    }
+  };
+  return { url, prisma, drop, dropRole };
 }

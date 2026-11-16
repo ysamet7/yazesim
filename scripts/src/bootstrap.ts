@@ -11,7 +11,8 @@
  * This file runs directly on Node.js (type stripping) before dependencies are
  * installed, so it imports only Node built-ins and local helpers.
  */
-import { compose, databaseVolumeExists } from './lib/compose.ts';
+import { compose, databaseVolumeExists, psql } from './lib/compose.ts';
+import { appRoleSql } from './lib/db-roles.ts';
 import { CommandError, run } from './lib/exec.ts';
 import {
   APP_ENV_FILES,
@@ -150,7 +151,7 @@ const steps: readonly Step[] = [
   {
     id: 'db',
     title: 'Veritabanı hazırlanıyor',
-    run: async () => {
+    run: async (context) => {
       try {
         await run('pnpm', ['--filter', '@yazesim/database', 'db:migrate'], { quiet: true });
       } catch (error) {
@@ -168,6 +169,27 @@ const steps: readonly Step[] = [
       }
       await run('pnpm', ['--filter', '@yazesim/database', 'db:generate'], { quiet: true });
       log.ok('Migrasyonlar güncel, veritabanı istemcisi üretildi');
+
+      // After the migrations: they create the group the login role joins.
+      const infra = requireInfra(context);
+      const user = infra.POSTGRES_APP_USER ?? '';
+      const password = infra.POSTGRES_APP_PASSWORD ?? '';
+      const result = psql(
+        infra.POSTGRES_USER ?? '',
+        infra.POSTGRES_DB ?? '',
+        appRoleSql(user, password),
+      );
+      if (!result.ok) {
+        // psql quotes the failing statement; the password never reaches the terminal.
+        const detail = password === '' ? result.stderr : result.stderr.replaceAll(password, '***');
+        throw new BootstrapError(
+          'Uygulamanın veritabanı kullanıcısı oluşturulamadı.',
+          `${detail}\nAyrıntı için \`pnpm infra:logs postgres\`.`,
+        );
+      }
+      log.ok(
+        `Uygulama ${user} kullanıcısıyla bağlanır (tablo silemez, denetim kaydını değiştiremez)`,
+      );
     },
   },
   {

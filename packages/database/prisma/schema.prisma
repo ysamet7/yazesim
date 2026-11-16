@@ -7,6 +7,10 @@
 // are stored only as application-layer ciphertext (golden rule 7).
 // Constraints Prisma cannot express (append-only triggers, checks, partial
 // unique indexes) live in the migrations' SQL.
+// Privileges: the apps connect as a member of yazesim_app_rw, not as the
+// owner. Every migration that creates a table grants it to yazesim_app_rw
+// (append-only tables: SELECT and INSERT only); test/privileges.db-spec.ts
+// fails for a table without a grant.
 
 generator client {
   provider               = "prisma-client"
@@ -24,8 +28,10 @@ datasource db {
 // ── Operations ───────────────────────────────────────────────────────────
 
 /// Security and administration events: sign-ins, role versions, prices,
-/// approvals. Append-only: the database refuses UPDATE, DELETE and TRUNCATE,
-/// so not even an administrator with database access can rewrite history.
+/// approvals. Append-only: triggers refuse UPDATE, DELETE and TRUNCATE for
+/// every role, and the application role can neither change nor drop those
+/// triggers. Only the owner role (migrations, kept off the application
+/// servers) could remove them, and only with a reviewed migration.
 model AuditLog {
   id        BigInt   @id @default(autoincrement())
   /// Who acted: a user id, an administrator's wallet, or `system:<job>`.

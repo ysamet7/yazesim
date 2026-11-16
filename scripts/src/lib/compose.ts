@@ -1,5 +1,5 @@
 /** Helpers for the local Docker stack in infra/docker. */
-import { capture, run } from './exec.ts';
+import { capture, run, type CaptureResult } from './exec.ts';
 
 // Relative to the repository root so arguments never contain spaces.
 export const COMPOSE_FILE = 'infra/docker/docker-compose.yml';
@@ -14,6 +14,33 @@ export function compose(
     'docker',
     ['compose', '-f', COMPOSE_FILE, '--env-file', INFRA_ENV_FILE, ...args],
     options,
+  );
+}
+
+/**
+ * Runs SQL as `user` inside the PostgreSQL container (local socket). The SQL
+ * goes on standard input, so secrets in it never appear in a process list.
+ */
+export function psql(user: string, database: string, sql: string): CaptureResult {
+  return capture(
+    'docker',
+    [
+      'compose',
+      '-f',
+      COMPOSE_FILE,
+      '--env-file',
+      INFRA_ENV_FILE,
+      'exec',
+      '-T',
+      'postgres',
+      'psql',
+      '--quiet',
+      '--no-psqlrc',
+      '--set=ON_ERROR_STOP=1',
+      `--username=${user}`,
+      `--dbname=${database}`,
+    ],
+    { input: sql },
   );
 }
 

@@ -7,6 +7,8 @@ export interface RunOptions {
   readonly env?: NodeJS.ProcessEnv;
   /** Capture output instead of streaming it to the terminal. */
   readonly quiet?: boolean;
+  /** Text written to the command's standard input (`capture` only); never part of argv. */
+  readonly input?: string;
 }
 
 export class CommandError extends Error {
@@ -98,6 +100,7 @@ export function capture(
     shell: resolved.shell,
     encoding: 'utf8',
     timeout: 30_000,
+    ...(options.input === undefined ? {} : { input: options.input }),
   });
   // stdout/stderr are null when the executable could not be started at all.
   const stdout = result.stdout as string | null;
