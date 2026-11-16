@@ -1,0 +1,9 @@
+{
+  "extends": "@yazesim/config/tsconfig/nest.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true,
+    "removeComments": false
+  },
+  "include": ["src", "vitest.config.ts", "eslint.config.js"]
+}

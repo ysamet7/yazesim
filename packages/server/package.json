@@ -1,0 +1,47 @@
+{
+  "name": "@yazesim/server",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Server-side building blocks shared by the API and the worker: error body, readiness checks, field encryption, privacy-safe logging",
+  "license": "UNLICENSED",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@yazesim/shared": "workspace:*",
+    "zod": "catalog:"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "catalog:",
+    "pino-http": "catalog:"
+  },
+  "devDependencies": {
+    "@nestjs/common": "catalog:",
+    "@types/express": "catalog:",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "@yazesim/config": "workspace:*",
+    "eslint": "catalog:",
+    "pino": "catalog:",
+    "pino-http": "catalog:",
+    "reflect-metadata": "catalog:",
+    "rxjs": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}
