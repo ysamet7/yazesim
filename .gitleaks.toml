@@ -1,5 +1,9 @@
 # gitleaks (pre-commit hook and CI, full history): the default rule set.
-# Nothing is allowlisted: the repository is public (CLAUDE.md golden rule 1),
-# and a value that looks like a key is treated as one until proven otherwise.
+# The repository is public (CLAUDE.md golden rule 1): a value that looks like
+# a key is treated as one unless it is listed here as public by construction.
 [extend]
 useDefault = true
+
+[[allowlists]]
+description = "The NoR token contract on Avalanche C-Chain: a public address, not a secret (the generic rule reads NOR_TOKEN_ADDRESS as a token)"
+regexes = ['''(?i)^0x5782b954d9dc46168458a7e02db49b01e5a1a669$''']
