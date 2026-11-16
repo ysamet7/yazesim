@@ -63,6 +63,36 @@ describe('toolchain consistency', () => {
     }
   });
 
+  it('pins CI to the toolchain versions', () => {
+    const ci = readFileSync(repoPath('.github/workflows/ci.yml'), 'utf8');
+    expect(ci).toContain(`FOUNDRY_VERSION: v${toolchain.foundry}`);
+    expect(ci).toContain(`GITLEAKS_VERSION: ${toolchain.gitleaks}`);
+    // Every job that installs Foundry takes the pinned version above.
+    const installs = ci
+      .split('\n')
+      .flatMap((line, i, lines) =>
+        line.includes('foundry-rs/foundry-toolchain@') ? [lines[i + 2]?.trim()] : [],
+      );
+    expect(installs.length).toBeGreaterThanOrEqual(2);
+    for (const version of installs) expect(version).toBe('version: ${{ env.FOUNDRY_VERSION }}');
+  });
+
+  it('pins every GitHub Action to a full commit', () => {
+    const ci = readFileSync(repoPath('.github/workflows/ci.yml'), 'utf8');
+    const uses = ci
+      .split('\n')
+      .filter((line) => line.trim().startsWith('- uses:') || line.trim().startsWith('uses:'));
+    expect(uses.length).toBeGreaterThan(0);
+    for (const line of uses) expect(line).toMatch(/@[0-9a-f]{40} # v\d/u);
+  });
+
+  it('keeps Foundry dynamic test linking off and file access closed', () => {
+    const foundryToml = readFileSync(repoPath('contracts/foundry.toml'), 'utf8');
+    expect(foundryToml).toMatch(/^dynamic_test_linking = false$/mu);
+    expect(foundryToml).toMatch(/^fs_permissions = \[\]$/mu);
+    expect(foundryToml).toContain('evm_version = "cancun"');
+  });
+
   it('keeps .nvmrc equal to the toolchain Node version and inside the engines range', () => {
     const nvmrc = readFileSync(repoPath('.nvmrc'), 'utf8').trim();
     expect(nvmrc).toBe(toolchain.node);
