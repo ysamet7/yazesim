@@ -1,0 +1,15 @@
+{
+  "extends": "@yazesim/config/tsconfig/library.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true
+  },
+  "include": [
+    "src",
+    "test",
+    "prisma.config.ts",
+    "vitest.config.ts",
+    "vitest.db.config.ts",
+    "eslint.config.js"
+  ]
+}
