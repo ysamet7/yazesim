@@ -155,6 +155,44 @@ describe('log redaction (no personal data or secrets in logs)', () => {
     });
   });
 
+  it('scrubs the message text and its interpolation values', () => {
+    const { logger, lines } = captureLogger();
+    logger.info('sent to uye@example.com via postgres://app:parola@db/yazesim and 05321234567');
+    logger.info('user %s logged in from %j', 'uye@example.com', { ip: '10.0.0.1' });
+    const [first, second] = lines();
+    expect(first?.msg).toBe('sent to [email] via [url] and [phone]');
+    expect(second?.msg).toBe(`user [email] logged in from {"ip":"${REDACTED}"}`);
+  });
+
+  it('scrubs class instances and child logger bindings', () => {
+    const { logger, lines } = captureLogger();
+    class SignupDto {
+      readonly email = 'uye@example.com';
+      readonly password = 'hunter2';
+    }
+    const child = logger.child({ email: 'uye@example.com', component: 'auth' });
+    child.info({ dto: new SignupDto() });
+    child.child({ phone: '05321234567' }, { level: 'debug' }).info('grandchild');
+    const text = JSON.stringify(lines());
+    expect(text).not.toMatch(/uye@example\.com|hunter2|05321234567/u);
+    expect(text).toContain('"component":"auth"');
+    expect(lines()).toHaveLength(2);
+  });
+
+  it('scrubs non-error values logged under err', () => {
+    const { logger, lines } = captureLogger();
+    logger.info({ err: { password: 'hunter2', reason: 'x' } });
+    expect(lines()[0]?.err).toEqual({ password: REDACTED, reason: 'x' });
+  });
+
+  it('keeps ESM stack locations in logged errors', () => {
+    const { logger, lines } = captureLogger();
+    const error = new Error('boom');
+    error.stack = 'Error: boom\n    at inner (file:///app/dist/main.js:10:5)';
+    logger.error({ err: error });
+    expect((lines()[0]?.err as { stack: string }).stack).toContain('file:///app/dist/main.js:10:5');
+  });
+
   it('redacts credentials in request and response headers', () => {
     const { logger, lines } = captureLogger();
     logger.info({

@@ -23,6 +23,8 @@ const SENSITIVE_KEY = new RegExp(
     'secret',
     'privatekey',
     'apikey',
+    'passphrase',
+    'credential',
     'accesskey',
     'encryptionkey',
     'signingkey',
@@ -33,6 +35,11 @@ const SENSITIVE_KEY = new RegExp(
     'authorization',
     'cookie',
     'token$',
+    // `accessTokens`, `refreshTokens`; usage counts such as `outputTokens` stay
+    'accesstoken',
+    'refreshtoken',
+    'idtoken',
+    'sessiontoken',
     // Connection strings and endpoints (RPC URLs often embed a provider key)
     '(url|uri|dsn)$',
     // Personal data (KVKK)
@@ -53,6 +60,12 @@ const SENSITIVE_KEY = new RegExp(
     'postaladdress',
     'homeaddress',
     'streetaddress',
+    // Network identifiers are personal data under KVKK
+    'ipaddress',
+    'remoteaddress',
+    'clientip',
+    'forwardedfor',
+    'useragent',
     // Chat content: messages, prompts, answers, summaries and memory (golden rule 7)
     // Anchored at the end: `messageContent` and `systemPrompt` are content,
     // `promptTokenCount` and `contentType` are not.
@@ -64,7 +77,7 @@ const SENSITIVE_KEY = new RegExp(
     'usermemory',
     'systeminstruction',
     '^(text|body|messages|history|question|answer|reply|summary|memory|title)$',
-    '^(tc|tcno|tckn|tel|dob|seed|otp|otpcode|pin|token)$',
+    '^(tc|tcno|tckn|tel|dob|seed|otp|otpcode|pin|token|key|ip|ips)$',
   ].join('|'),
   'u',
 );
@@ -74,11 +87,18 @@ export function isSensitiveKey(key: string): boolean {
   return SENSITIVE_KEY.test(key.toLowerCase().replace(/[\s._-]/gu, ''));
 }
 
-const URL_PATTERN = /[a-z][a-z0-9+.-]*:\/\/[^\s'"`<>]+/giu;
+const URL_PATTERN = /([a-z][a-z0-9+.-]*):\/\/[^\s'"`<>]+/giu;
 
-/** Replaces every URL in free text (error messages, stacks) with `[url]`. */
+/**
+ * Replaces every URL in free text (log messages, error messages, stacks) with
+ * `[url]`. RPC and database URLs carry keys and passwords in their path or user
+ * part. `file:` URLs are kept: ESM stack frames are `file:` URLs and carry only
+ * the source location.
+ */
 export function scrubUrls(text: string): string {
-  return text.replace(URL_PATTERN, '[url]');
+  return text.replace(URL_PATTERN, (url, scheme: string) =>
+    scheme.toLowerCase() === 'file' ? url : '[url]',
+  );
 }
 
 const EMAIL_PATTERN = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gu;
@@ -94,14 +114,14 @@ export function scrubContactDetails(text: string): string {
   return text.replace(EMAIL_PATTERN, '[email]').replace(TURKISH_MOBILE_PATTERN, '[phone]');
 }
 
+/** Free text (a log message, an error message or stack): no URLs, e-mail addresses or phone numbers. */
+export function scrubFreeText(text: string): string {
+  return scrubContactDetails(scrubUrls(text));
+}
+
 /** Masks credentials embedded in URLs (`scheme://user:pass@host`) inside a string value. */
 function maskUrlCredentials(text: string): string {
   return text.replace(/([a-z][a-z0-9+.-]*:\/\/)[^\s/@'"`<>]+@/giu, `$1${REDACTED}@`);
-}
-
-function isPlainObject(value: object): value is Record<string, unknown> {
-  const prototype: unknown = Object.getPrototypeOf(value);
-  return prototype === Object.prototype || prototype === null;
 }
 
 /**
@@ -114,19 +134,20 @@ export function scrubError(error: Error, depth = 0): Record<string, unknown> {
   const { code } = error as { code?: unknown };
   const result: Record<string, unknown> = {
     type: error.name,
-    message: scrubContactDetails(scrubUrls(error.message)),
+    message: scrubFreeText(error.message),
   };
   if (typeof code === 'string' || typeof code === 'number') result.code = code;
-  if (error.stack !== undefined) result.stack = scrubContactDetails(scrubUrls(error.stack));
+  if (error.stack !== undefined) result.stack = scrubFreeText(error.stack);
   if (error.cause !== undefined)
     result.cause = scrubLogValue(error.cause, depth + 1, new WeakSet());
   return result;
 }
 
 /**
- * Returns a copy of `value` that is safe to log. Plain objects and arrays are
- * walked; errors become `scrubError` output; other class instances (such as the
- * raw request and response, which have their own serializers) are kept as they are.
+ * Returns a copy of `value` that is safe to log. Objects and arrays are walked
+ * at any depth, class instances (DTOs, database rows) through their own
+ * enumerable fields; errors become `scrubError` output; dates are kept; binary
+ * data, maps and sets are replaced by a placeholder.
  */
 export function scrubLogValue(value: unknown, depth = 0, seen = new WeakSet<object>()): unknown {
   if (typeof value === 'string') return scrubContactDetails(maskUrlCredentials(value));
@@ -134,15 +155,28 @@ export function scrubLogValue(value: unknown, depth = 0, seen = new WeakSet<obje
   if (seen.has(value)) return '[Circular]';
   if (depth > MAX_DEPTH) return '[Truncated]';
   if (value instanceof Error) return scrubError(value, depth);
-  if (!Array.isArray(value) && !isPlainObject(value)) return value;
+  if (value instanceof Date) return value;
+  if (value instanceof URL) return scrubUrls(value.href);
+  if (ArrayBuffer.isView(value) || value instanceof ArrayBuffer) return '[Binary]';
+  if (value instanceof Map || value instanceof Set) return `[${value.constructor.name}]`;
   seen.add(value);
   if (Array.isArray(value)) return value.map((item) => scrubLogValue(item, depth + 1, seen));
   const result: Record<string, unknown> = {};
   for (const [key, item] of Object.entries(value)) {
-    result[key] =
-      isSensitiveKey(key) && item !== null && typeof item !== 'boolean' && item !== undefined
-        ? REDACTED
-        : scrubLogValue(item, depth + 1, seen);
+    result[key] = scrubField(key, item, depth + 1, seen);
   }
   return result;
+}
+
+/** The log-safe form of `item` stored under `key`: redacted when the key is sensitive. */
+export function scrubField(
+  key: string,
+  item: unknown,
+  depth = 0,
+  seen = new WeakSet<object>(),
+): unknown {
+  if (isSensitiveKey(key) && item !== null && typeof item !== 'boolean' && item !== undefined) {
+    return REDACTED;
+  }
+  return scrubLogValue(item, depth, seen);
 }

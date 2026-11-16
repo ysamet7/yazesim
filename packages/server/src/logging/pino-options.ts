@@ -11,9 +11,9 @@
  */
 import { randomUUID } from 'node:crypto';
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import type { LoggerOptions } from 'pino';
+import { pino, type LoggerOptions } from 'pino';
 import type { Options } from 'pino-http';
-import { REDACTED, scrubError, scrubLogValue } from './scrub.js';
+import { REDACTED, scrubError, scrubField, scrubFreeText, scrubLogValue } from './scrub.js';
 
 export const REQUEST_ID_HEADER = 'x-request-id';
 
@@ -55,26 +55,75 @@ export interface HttpLoggingOptions {
   readonly quietPaths?: readonly string[];
 }
 
+/** `err` and other non-Error values logged under `err` are scrubbed alike. */
+function serializeError(error: unknown): unknown {
+  return error instanceof Error ? scrubError(error) : scrubLogValue(error);
+}
+
+/** Scrubs every logged object except top-level keys that a serializer of our own reduces. */
+function scrubMergeObject(
+  object: Record<string, unknown>,
+  serializedKeys: ReadonlySet<string>,
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(object)) {
+    result[key] = serializedKeys.has(key) ? value : scrubField(key, value);
+  }
+  return result;
+}
+
 /**
- * Logger-level options shared by every YazeSim logger: header redaction, key
- * pattern scrubbing of every logged object and URL-free error serialization.
+ * pino serializes `logger.child({ … })` bindings once, into a JSON fragment,
+ * without calling `formatters.bindings`. This re-scrubs that fragment.
  */
-export function buildLoggerOptions(level: string): LoggerOptions {
+function scrubChildBindings(child: pino.Logger): void {
+  const holder = child as unknown as Record<symbol, unknown>;
+  const fragment = holder[pino.symbols.chindingsSym];
+  if (typeof fragment !== 'string' || fragment === '') return;
+  const bindings = JSON.parse(`{${fragment.slice(1)}}`) as Record<string, unknown>;
+  const scrubbed = JSON.stringify(scrubLogValue(bindings));
+  holder[pino.symbols.chindingsSym] = `,${scrubbed.slice(1, -1)}`;
+}
+
+function loggerOptions(level: string, serializedKeys: ReadonlySet<string>): LoggerOptions {
   return {
     level,
     redact: { paths: [...REDACT_PATHS], censor: REDACTED },
     formatters: {
-      log: (object) => scrubLogValue(object) as Record<string, unknown>,
+      log: (object) => scrubMergeObject(object, serializedKeys),
+      // Root bindings (`base`); child bindings are scrubbed in `onChild`.
+      bindings: (bindings) => scrubLogValue(bindings) as Record<string, unknown>,
     },
-    serializers: {
-      err: (error: unknown) => (error instanceof Error ? scrubError(error) : error),
+    hooks: {
+      // The message and its interpolation values never pass through
+      // `formatters.log`: `logger.info(`sent to ${email}`)` is scrubbed here.
+      logMethod(args, method) {
+        const scrubbed = args.map((arg, index) => {
+          if (typeof arg === 'string') return scrubFreeText(arg);
+          // The first object is the merge object, scrubbed by `formatters.log`.
+          return index === 0 ? arg : scrubLogValue(arg);
+        }) as Parameters<typeof method>;
+        method.apply(this, scrubbed);
+      },
     },
+    onChild: scrubChildBindings,
+    serializers: { err: serializeError },
   };
+}
+
+/**
+ * Logger-level options shared by every YazeSim logger: header redaction, key
+ * pattern scrubbing of every logged object, of child bindings and of the
+ * message text, and URL-free error serialization.
+ */
+export function buildLoggerOptions(level: string): LoggerOptions {
+  return loggerOptions(level, new Set(['err']));
 }
 
 export function buildPinoHttpOptions(options: HttpLoggingOptions): Options {
   const quietPaths = new Set(options.quietPaths ?? []);
-  const base = buildLoggerOptions(options.level);
+  // `req` and `res` are raw Node objects, reduced by the serializers below.
+  const base = loggerOptions(options.level, new Set(['err', 'req', 'res']));
   return {
     ...base,
     genReqId: (req: IncomingMessage, res: ServerResponse) => {

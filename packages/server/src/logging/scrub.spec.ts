@@ -48,6 +48,16 @@ describe('isSensitiveKey', () => {
     'fullName',
     'homeAddress',
     'pin',
+    'passphrase',
+    'credentials',
+    'key',
+    'ipAddress',
+    'ip',
+    'remoteAddress',
+    'x-forwarded-for',
+    'userAgent',
+    'accessTokens',
+    'refreshTokens',
   ])('treats %s as sensitive', (key) => {
     expect(isSensitiveKey(key)).toBe(true);
   });
@@ -70,12 +80,22 @@ describe('isSensitiveKey', () => {
     'cachedContentTokenCount',
     'contentType',
     'titleLength',
+    'outputTokens',
+    'promptTokens',
+    'zip',
+    'monkey',
   ])('keeps %s', (key) => {
     expect(isSensitiveKey(key)).toBe(false);
   });
 });
 
 describe('scrubUrls', () => {
+  it('keeps file URLs, which are ESM stack frame locations', () => {
+    expect(
+      scrubUrls('at inner (file:///app/dist/main.js:10:5) calling https://rpc.example/v2/key'),
+    ).toBe('at inner (file:///app/dist/main.js:10:5) calling [url]');
+  });
+
   it('replaces every URL in free text', () => {
     expect(scrubUrls('GET https://rpc.example/v2/key failed; see wss://x.y/z')).toBe(
       'GET [url] failed; see [url]',
@@ -128,12 +148,28 @@ describe('scrubLogValue', () => {
     });
   });
 
-  it('keeps class instances for their own serializers', () => {
-    class Request {
-      readonly password = 'kept for the req serializer';
+  it('walks class instances such as DTOs and database rows', () => {
+    class SignupDto {
+      readonly email = 'uye@example.com';
+      readonly password = 'hunter2';
+      readonly ageConfirmed = true;
     }
-    const req = new Request();
-    expect((scrubLogValue({ req }) as { req: unknown }).req).toBe(req);
+    expect(scrubLogValue({ dto: new SignupDto() })).toEqual({
+      dto: { email: REDACTED, password: REDACTED, ageConfirmed: true },
+    });
+  });
+
+  it('keeps dates and replaces binary data, maps, sets and URL objects', () => {
+    const at = new Date('2026-11-16T00:00:00Z');
+    expect(
+      scrubLogValue({
+        at,
+        bytes: Buffer.from('gizli'),
+        map: new Map([['a', 1]]),
+        set: new Set([1]),
+        endpoint: new URL('https://rpc.example/v2/key'),
+      }),
+    ).toEqual({ at, bytes: '[Binary]', map: '[Map]', set: '[Set]', endpoint: '[url]' });
   });
 
   it('handles cycles and very deep nesting', () => {
