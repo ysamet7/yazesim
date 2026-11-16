@@ -1,9 +1,6 @@
-# Golden rules 3 and 4: nothing from external/ and no review report ever enters git,
-# not even with `git add -f`.
-if git diff --cached --name-only | grep -Eq '^external/|inceleme-raporu'; then
-  echo "external/ veya inceleme raporu commit'e eklenemez (CLAUDE.md altın kural 3 ve 4)." >&2
-  exit 1
-fi
+# Golden rules 1, 3 and 4: nothing from external/, no review report and no .env
+# file ever enters git, not even with `git add -f` (scripts/src/lib/repo-guard.ts).
+node scripts/src/repo-guard.ts --staged
 
 pnpm exec lint-staged
 

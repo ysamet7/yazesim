@@ -1,0 +1,7 @@
+{
+  "extends": "@yazesim/config/tsconfig/script.json",
+  "compilerOptions": {
+    "rootDir": "."
+  },
+  "include": ["src", "vitest.config.ts", "eslint.config.js"]
+}
