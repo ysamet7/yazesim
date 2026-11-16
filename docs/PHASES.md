@@ -8,7 +8,8 @@ Yeni oturum buradan devam eder. Her adımın (commit'in) sonunda güncellenir. A
 - **Dal:** `faz-0-iskelet` (yerel; GitHub'a henüz itilmedi)
 - **Son yapılan:** Bağımsız inceleme yapıldı (2 yüksek, 2 orta, 9 düşük bulgu); hepsi testleriyle düzeltildi (commit `e3bc9bd` … `1ed73cc`). `pnpm verify` (tam) yerelde yeşil.
 - **Sıradaki adım:** Adım 13 — Yusuf'a GitHub deposunun sahibi/adı ve herkese açık yayın onayı sorulur; onayla depo açılır, korumalar açılır, dal itilir, PR açılır (birleştirme Yusuf'un onayıyla).
-- **Bekleyen (Yusuf):** Gemini anahtarı (`.env`'e kendisi girecek); GitHub'da depo sahibi ve adı (adım 13'te sorulacak).
+- **Yapay zekâ anahtarı:** Geldi ve test edildi (2026-11-17, ADR-013): KragaBridge aracı servisi, yalnız Gemini modelleri, ilk kelime 4–21 sn. Anahtar şimdilik kök `.env`'de (`AI_API_KEY`); Faz 4'te uyarlayıcı yazılınca `apps/api/.env`'e taşınır.
+- **Bekleyen (Yusuf):** GitHub'da depo sahibi ve adı (adım 13'te sorulacak).
 - **Adım 13'te sorulacak:** Commit'ler GitHub'ın gizli e-posta adresiyle (noreply) atılıyor, gerçek e-posta görünmez; dokümanlarda geçen ilk adların (Yusuf, Habib bey) herkese açık depoda kalması onaylanacak.
 - **Paralel:** Faz 1 tasarım tuvali ayrı oturumda (yalnız `docs/design/` altına yazar; o dosyalar bu oturumun commit'lerine eklenmez).
 

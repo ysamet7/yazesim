@@ -46,7 +46,7 @@ Gerekçe: Mağaza ücreti ve onayı olmadan hızlı çıkış; NoR yüklemenin i
 Alternatifler: ilk sürümde mağaza uygulaması (yükleme olmaz, ret riski); mağaza içi satın alma (komisyon, NoR dışı ödeme).
 
 ### ADR-005 — Yapay zekâ servisi: önce Gemini, sağlayıcı katmanı değiştirilebilir · 2026-11-16
-Durum: Yusuf seçti (2026-11-16): deneme amaçlı bir Gemini kotası aldı, anahtarı bekliyor. Anahtarı Yusuf kendi `.env` dosyasına girer.
+Durum: Yusuf seçti (2026-11-16): deneme amaçlı bir Gemini kotası aldı, anahtarı bekliyor. Anahtarı Yusuf kendi `.env` dosyasına girer. **2026-11-17: ADR-013 ile güncellendi** (şimdilik aracı servis üzerinden Gemini; ilk uyarlayıcı OpenAI uyumlu).
 Karar:
 - İlk uyarlayıcı **Google Gemini API**. Sunucuda tek bir sağlayıcı arayüzü olur; başka servis (ör. Claude) yalnız yeni bir uyarlayıcıyla eklenir. Model adları ve fiyat tablosu koda gömülmez, yapılandırmadan gelir.
 - İki kullanım düzeyi: "Hızlı" (varsayılan, ucuz Flash sınıfı model) ve "Derin" (üst model). Kullanıcı model adı görmez.
@@ -128,6 +128,18 @@ Gerekçe: Yusuf'un kararı; kısıtlanmış yanıt ürünün değerini düşür�
 Alternatifler: önceki plan (yüksek riskli alan sınırları, uyarılar); hukukçu görüşüne kadar sınırları korumak.
 Etkilenen: ADR-011 (katmanlı koruma maddesi), CLAUDE.md altın kural 10, plan §2.1–2.3, §6, §7.
 
+### ADR-013 — Şimdilik KragaBridge aracı servisi; ilk uyarlayıcı OpenAI uyumlu · 2026-11-17
+Durum: Yusuf'un kararı (2026-11-17): "şimdilik böyle kullanalım". Anahtar Yusuf'ta, yerel `.env` dosyasında.
+Karar:
+- Yapay zekâ istekleri şimdilik Google'a doğrudan değil, **KragaBridge** aracı servisi (`https://api.kraga.org/v1`) üzerinden gider. Servis OpenAI uyumlu (`/chat/completions`) ve Anthropic uyumlu (`/messages`) uç noktalar sunar; kimlik doğrulama `Authorization: Bearer`. Elimizdeki anahtar yalnız Gemini modellerini açar (ör. `gemini-3.8-flash`, `gemini-3.5-flash-lite`, `gemini-3.1-pro`, `gemini-4-*`).
+- İlk uyarlayıcı **OpenAI uyumlu sohbet arayüzü** ile yazılır; adres, anahtar ve model adları yapılandırmadan gelir. Google'ın Gemini API'si de OpenAI uyumlu uç nokta sunduğu için ileride doğrudan Google'a geçmek yalnız ayar değişikliği olur (ADR-005'in "servis değişse de kod değişmez" ilkesi korunur).
+- Servis her yanıtta kendi birimiyle ölçülen kullanımı (`charged_tokens` ve hesap formülü) döndürür; kredi defteri gerçek kullanımı buradan alır.
+- Ölçüm (2026-11-17, 18 deneme): bağlantı ~0,5 sn; ilk kelime **4–21 sn** (çoğu 6–16 sn); ilk kelimeden sonra yanıt 1–1,5 sn'de akarak tamamlanır. Bekleme servis tarafındadır: model, uç nokta ve düşünme ayarı değiştirmez. Bu, "ilk yanıt kelimesi ≤ 1,5 sn" hedefini karşılamaz; şimdilik kabul edildi. Arayüz bekleme süresini anında tepki ve "yazıyor" göstergesiyle karşılar.
+- Canlıya geçmeden önce yeniden değerlendirilir: hız hedefi ve kişisel verinin aracı servisten geçmesi (KVKK değerlendirmesi Habib bey'de; H2).
+Gerekçe: Yusuf'un elindeki anahtar; geliştirmeye beklemeden başlamak.
+Alternatifler: doğrudan Google Gemini anahtarı (daha hızlı olması beklenir, ölçülmedi); servis sağlayıcısına gecikmeyi sormak.
+Etkilenen: ADR-005 (ilk uyarlayıcı ve anahtar kaynağı), H2.
+
 ---
 
 ## Hukukçuya sorulacaklar (canlıya çıkmadan önce cevaplanmalı)
@@ -135,7 +147,7 @@ Etkilenen: ADR-011 (katmanlı koruma maddesi), CLAUDE.md altın kural 10, plan �
 | No | Soru | İlgili |
 |---|---|---|
 | H1 | NoR karşılığında yapay zekâ hizmeti (kredi) satmak, TCMB'nin _Ödemelerde Kripto Varlıkların Kullanılmamasına Dair Yönetmelik_'i (RG 16.04.2021) kapsamında "ödemede kripto varlık kullanımı" sayılır mı? (NoRiba'daki soru 1.1 ile aynı konu.) | ADR-007 |
-| H2 | Sohbet içeriğinin yurt dışındaki yapay zekâ servisine gönderilmesi KVKK m.9 yurt dışı aktarımıdır: standart sözleşme ve bildirim nasıl yürütülmeli? | ADR-005 |
+| H2 | Sohbet içeriğinin yurt dışındaki yapay zekâ servisine gönderilmesi KVKK m.9 yurt dışı aktarımıdır: standart sözleşme ve bildirim nasıl yürütülmeli? Arada aracı servis (KragaBridge) olduğunda durum nedir? | ADR-005, ADR-013 |
 | H3 | Sağlık sohbetleri özel nitelikli kişisel veridir (KVKK m.6): açık rıza metni ve saklama süresi ne olmalı? | ADR-001, ADR-011 |
 | H4 | Kullanılmayan kredinin iade edilmemesi tüketici mevzuatına uygun mu? | ADR-007 |
 | H5 | Telifi süren yazarlar için "üslubundan esinlenen canlandırma" ve yazar adının kullanımı (FSEK, kişilik hakkı, mirasçılar) sorun yaratır mı? | ADR-002 |

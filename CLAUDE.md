@@ -41,7 +41,7 @@ Rol tanımları koddan ayrı, sürümlü veridir: her rolün kategorisi, talimat
 
 Adım adım ilerleme **`docs/PHASES.md`** dosyasındadır: her commit'ten sonra güncellenir, yeni oturum oradaki "Şu an" bölümünden devam eder. Oturumlarda öğrenilen pratik dersler `docs/runbooks/AGENT-NOTES.md`'de.
 
-Özet (2026-11-16): İnceleme, kararlar (`docs/DECISIONS.md` ADR-001…012) ve v1 planı (`docs/plans/yazesim-v1.md`) tamam. Faz 0 (iskelet) planı onaylandı ve uygulanıyor (`docs/plans/faz-0.md`). Faz 1 tasarım tuvali ayrı oturumda hazırlanıyor. Bekleyenler: Habib bey'in ADR-008 ve ADR-010 onayı; Gemini anahtarı (Yusuf kendi `.env` dosyasına girer); hukukçu soruları H1–H7 (`docs/DECISIONS.md` sonunda). Önceki denemenin inceleme raporu `external/inceleme-raporu.md` (git dışı).
+Özet (2026-11-16): İnceleme, kararlar (`docs/DECISIONS.md` ADR-001…012) ve v1 planı (`docs/plans/yazesim-v1.md`) tamam. Faz 0 (iskelet) planı onaylandı ve uygulanıyor (`docs/plans/faz-0.md`). Faz 1 tasarım tuvali ayrı oturumda hazırlanıyor. Yapay zekâ anahtarı şimdilik KragaBridge aracı servisinden (ADR-013). Bekleyenler: Habib bey'in ADR-008 ve ADR-010 onayı; hukukçu soruları H1–H7 (`docs/DECISIONS.md` sonunda). Önceki denemenin inceleme raporu `external/inceleme-raporu.md` (git dışı).
 
 ## Altın kurallar (asla ihlal etme)
 
