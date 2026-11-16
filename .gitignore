@@ -32,3 +32,6 @@ test-results/
 contracts/out/
 contracts/cache/
 contracts/broadcast/
+
+# Local Claude Code settings (launch configs, permissions)
+.claude/

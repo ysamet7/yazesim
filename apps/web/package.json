@@ -1,0 +1,35 @@
+{
+  "name": "@yazesim/web",
+  "version": "0.0.0",
+  "private": true,
+  "description": "YazeSim web app (Next.js, installable PWA later) and the /yonetim panel",
+  "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3200",
+    "build": "next build",
+    "start": "next start --port 3200",
+    "typecheck": "next typegen && tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@yazesim/shared": "workspace:*",
+    "next": "16.4.6",
+    "next-intl": "4.15.1",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@tailwindcss/turbopack": "4.3.5",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@yazesim/config": "workspace:*",
+    "eslint": "catalog:",
+    "tailwindcss": "4.3.5",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}
