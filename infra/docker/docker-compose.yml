@@ -57,7 +57,7 @@ services:
     # Local EVM chain (31337) for the test NoR token. Same Foundry release as
     # toolchain.json and CI; Cancun hardfork like Avalanche C-Chain. State
     # persists across restarts so the chain stays consistent with the database.
-    image: ghcr.io/foundry-rs/foundry:v1.8.5@sha256:32c8ea9ef052a440cb1620175987a3f49eff8b068a0c6a3d09ebf7f5f9a0e043
+    image: ghcr.io/foundry-rs/foundry:v1.9.0@sha256:3a392c18f9b16e665e932de159fb6fa9ed972c4b4352f2f76a1a8c7ca9b57d39
     restart: unless-stopped
     entrypoint: [anvil]
     command:
