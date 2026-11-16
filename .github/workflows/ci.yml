@@ -51,7 +51,8 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      # Fails when external/, the review report or a .env file is tracked.
+      # Fails when external/, the review report or a .env file is tracked or
+      # appears anywhere in the history (fetch-depth 0 above).
       - name: Repository guard
         run: node scripts/src/repo-guard.ts
 

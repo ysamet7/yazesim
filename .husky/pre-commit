@@ -1,5 +1,6 @@
 # Golden rules 1, 3 and 4: nothing from external/, no review report and no .env
-# file ever enters git, not even with `git add -f` (scripts/src/lib/repo-guard.ts).
+# file is committed, whatever the spelling or `git add -f`
+# (scripts/src/lib/repo-guard.ts; CI checks the tracked files and the history).
 node scripts/src/repo-guard.ts --staged
 
 pnpm exec lint-staged

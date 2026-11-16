@@ -13,6 +13,13 @@ describe('findForbiddenPaths', () => {
     'apps/api/.env',
     'apps/web/.env.local',
     'infra/docker/.env.production',
+    'External/a.txt',
+    'EXTERNAL/x.php',
+    'apps/api/.ENV',
+    'apps/api/.Env.Local',
+    'apps/api/.env-prod',
+    '.envrc',
+    'deploy/prod.env',
   ])('rejects %s', (path) => {
     expect(findForbiddenPaths([path])).toHaveLength(1);
   });
