@@ -4,12 +4,11 @@ Yeni oturum buradan devam eder. Her adımın (commit'in) sonunda güncellenir. A
 
 ## Şu an
 
-- **Faz:** 0 — İskelet (plan onaylı, 2026-11-16)
-- **Depo:** https://github.com/ysamet7/yazesim (herkese açık, 2026-11-17) · **Dal:** `faz-0-iskelet` → PR `main`'e
-- **Son yapılan:** Bağımsız inceleme yapıldı (2 yüksek, 2 orta, 9 düşük bulgu); hepsi testleriyle düzeltildi (commit `e3bc9bd` … `1ed73cc`). `pnpm verify` (tam) yerelde yeşil.
-- **Sıradaki adım:** Faz 0 PR'ının CI'ı yeşil olunca Yusuf'un birleştirme onayı. Sonra Faz 1 (tasarım yönü seçimi gelince) ve Faz 2 planı.
+- **Faz:** 0 — İskelet **tamam** (PR #1 `main`'e birleştirildi, 2026-11-17, birleştirme commit'i `3842432`; GitHub CI 4/4 yeşil).
+- **Depo:** https://github.com/ysamet7/yazesim (herkese açık). Yeni iş her zaman `main`'den açılan bir dalda ve PR ile.
+- **Sıradaki adım:** Faz 1 (tasarım yönü seçimi gelince ADR olarak yazılır, `docs/plans/faz-1.md` hazırlanır) ve Faz 2 (hesap ve giriş) planı. İkisi paralel yürüyebilir.
 - **Yapay zekâ anahtarı:** Geldi ve test edildi (2026-11-17, ADR-013): KragaBridge aracı servisi, yalnız Gemini modelleri, ilk kelime 4–21 sn. Anahtar şimdilik kök `.env`'de (`AI_API_KEY`); Faz 4'te uyarlayıcı yazılınca `apps/api/.env`'e taşınır.
-- **Bekleyen (Yusuf):** Faz 0 PR'ını birleştirme onayı; Faz 1 tasarım yönü seçimi.
+- **Bekleyen (Yusuf):** Faz 1 tasarım yönü seçimi (Habib bey için sunum hazır, tasarım oturumunda).
 - **GitHub ayarları:** gizli bilgi taraması ve itme koruması, özel güvenlik bildirimi, Dependabot uyarıları açık. `main` korumalı: yalnız PR ile, 4 CI işi yeşil olmadan birleştirilemez, zorla itme ve silme kapalı, yöneticiye de uygulanır. Commit'ler GitHub'ın gizli (noreply) e-postasıyla.
 - **Paralel:** Faz 1 tasarım tuvali ayrı oturumda (yalnız `docs/design/` altına yazar; o dosyalar bu oturumun commit'lerine eklenmez).
 
@@ -28,7 +27,7 @@ Yeni oturum buradan devam eder. Her adımın (commit'in) sonunda güncellenir. A
 - [x] 11. CI (yerelde doğrulandı; GitHub'da ilk koşu PR'da)
 - [x] 12. Doküman ve sürüm notu (`docs/releases/faz-0.md`)
 - [x] 13. Herkese açık depo: `ysamet7/yazesim` (Yusuf'un onayıyla, 2026-11-17)
-- [~] 14. Bağımsız inceleme ve PR (inceleme ve düzeltmeler tamam; PR açıldı, birleştirme Yusuf'un onayıyla)
+- [x] 14. Bağımsız inceleme ve PR (#1, Yusuf'un onayıyla birleştirildi)
 
 Notlar:
 - Commit'ler (`faz-0-iskelet`): `83c50cb` kök · `aa4fb33` shared · `2698945` server · `0ae7fd2` database + test-support · `10ddc7a` Docker + betikler · `3b1ae49` api · `bf6ebdc` worker · `d83507a` web · `c8e35f1` sahte NoR · `427146b` CI + güvenlik + dokümanlar · `b58beb2` ilerleme · inceleme düzeltmeleri: `e3bc9bd` log maskeleme · `145ed17` depo koruması · `1316455` kısıtlı veritabanı kullanıcısı · `1ed73cc` düşük bulgular.
