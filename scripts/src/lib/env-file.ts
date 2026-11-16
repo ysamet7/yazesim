@@ -128,11 +128,12 @@ export function ensureEnvFile(options: EnsureEnvOptions): EnsureEnvResult {
   }
 
   const text = `${output.join('\n')}\n`;
+  // Tighten an existing file before new secrets go into it; `mode` below only
+  // applies when the file is created.
+  if (!created) chmodSync(options.targetPath, 0o600);
   if (text !== existingText) {
     writeFileSync(options.targetPath, text, { encoding: 'utf8', mode: 0o600 });
   }
-  // `mode` only applies when a file is created; this also tightens a file that
-  // was created earlier with wider permissions.
   chmodSync(options.targetPath, 0o600);
   return { created, added, updated, values };
 }

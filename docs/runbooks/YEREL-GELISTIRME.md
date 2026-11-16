@@ -4,14 +4,14 @@ Bu rehber YazeSim'i kendi bilgisayarında çalıştırmak içindir. Komutlar dep
 
 ## 1. Araçlar
 
-| Araç     | Sürüm                             | macOS kurulumu                            |
-| -------- | --------------------------------- | ----------------------------------------- |
-| Node.js  | 24 LTS (`.nvmrc`)                 | `brew install node@24` veya `nvm install` |
-| pnpm     | `package.json` → `packageManager` | `corepack enable` (Node ile gelir)        |
-| Docker   | Docker Desktop, servis açık       | `brew install --cask docker`              |
-| Foundry  | 1.8.5 (`toolchain.json`)          | `foundryup --install v1.8.5`              |
-| gitleaks | 8.19 veya üstü                    | `brew install gitleaks`                   |
-| Git      | 2.40 veya üstü                    | `brew install git`                        |
+| Araç     | Sürüm                             | macOS kurulumu                                                                                             |
+| -------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Node.js  | 24 LTS (`.nvmrc`)                 | `brew install node@24` veya `nvm install`                                                                  |
+| pnpm     | `package.json` → `packageManager` | `corepack enable` (Node ile gelir)                                                                         |
+| Docker   | Docker Desktop, servis açık       | `brew install --cask docker`                                                                               |
+| Foundry  | 1.8.5 (`toolchain.json`)          | `foundryup --install v1.8.5`                                                                               |
+| gitleaks | 8.30.1 (`toolchain.json`)         | [GitHub sürümleri](https://github.com/gitleaks/gitleaks/releases/tag/v8.30.1) veya `brew install gitleaks` |
+| Git      | 2.40 veya üstü                    | `brew install git`                                                                                         |
 
 `pnpm bootstrap` ilk adımda bunları denetler; eksik olanın kurulum komutunu yazar.
 

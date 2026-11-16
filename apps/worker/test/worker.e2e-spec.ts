@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import type { WorkerEnv } from '@yazesim/shared/env';
+import { fakeChainRpc } from '@yazesim/test-support';
 import { QueueEvents } from 'bullmq';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -22,10 +23,29 @@ async function startWorker(
   });
   const moduleRef = await Test.createTestingModule({ imports: [AppModule.forRoot(env)] }).compile();
   const app = moduleRef.createNestApplication<NestExpressApplication>({ bufferLogs: true });
-  configureApp(app);
-  await app.listen(0, '127.0.0.1');
+  try {
+    configureApp(app);
+    await app.listen(0, '127.0.0.1');
+  } catch (error) {
+    // A refused startup still opened database and Redis connections.
+    await app.close().catch(() => undefined);
+    throw error;
+  }
   return { app, env };
 }
+
+describe('worker startup with an RPC on another chain', () => {
+  it('refuses to start (golden rule 5)', async () => {
+    const rpc = await fakeChainRpc(43_114);
+    try {
+      await expect(startWorker({ RPC_URL: rpc.url })).rejects.toThrow(
+        'RPC reports chain 43114, expected 31337',
+      );
+    } finally {
+      await rpc.close();
+    }
+  });
+});
 
 describe('worker (against the local stack)', () => {
   let app: NestExpressApplication;

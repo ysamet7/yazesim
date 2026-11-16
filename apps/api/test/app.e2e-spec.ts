@@ -1,40 +1,15 @@
 import 'reflect-metadata';
-import { createServer } from 'node:http';
-import type { AddressInfo } from 'node:net';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { FieldCipher } from '@yazesim/server';
 import { EnvValidationError, type ApiEnv } from '@yazesim/shared/env';
 import { apiErrorBodySchema } from '@yazesim/shared/errors';
+import { fakeChainRpc } from '@yazesim/test-support';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { loadApiEnv } from '../src/config/env.js';
 import { startApp } from './support/app.js';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/u;
-
-/** A JSON-RPC endpoint that reports Avalanche mainnet (43114) for every request. */
-async function mainnetRpc(): Promise<{ url: string; close: () => Promise<void> }> {
-  const server = createServer((req, res) => {
-    let body = '';
-    req.on('data', (chunk: Buffer) => (body += chunk.toString()));
-    req.on('end', () => {
-      const { id } = JSON.parse(body) as { id: number };
-      res.setHeader('content-type', 'application/json');
-      res.end(JSON.stringify({ jsonrpc: '2.0', id, result: '0xa86a' }));
-    });
-  });
-  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
-  const { port } = server.address() as AddressInfo;
-  return {
-    url: `http://127.0.0.1:${String(port)}`,
-    close: () =>
-      new Promise<void>((resolve) =>
-        server.close(() => {
-          resolve();
-        }),
-      ),
-  };
-}
 
 describe('API (against the local stack)', () => {
   let app: NestExpressApplication;
@@ -225,7 +200,7 @@ describe('environment validation', () => {
 
 describe('API startup with an RPC on another chain', () => {
   it('refuses to start (golden rule 5)', async () => {
-    const rpc = await mainnetRpc();
+    const rpc = await fakeChainRpc(43_114);
     try {
       await expect(startApp({ RPC_URL: rpc.url })).rejects.toThrow(
         'RPC reports chain 43114, expected 31337',

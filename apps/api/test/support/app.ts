@@ -19,9 +19,15 @@ export async function startApp(
     imports: [AppModule.forRoot(env)],
   }).compile();
   const app = moduleRef.createNestApplication<NestExpressApplication>({ bufferLogs: true });
-  configureApp(app, env);
-  // Listening already, so supertest never starts and stops the server itself
-  // (its shared ephemeral server races when requests overlap).
-  await app.listen(0, '127.0.0.1');
+  try {
+    configureApp(app, env);
+    // Listening already, so supertest never starts and stops the server itself
+    // (its shared ephemeral server races when requests overlap).
+    await app.listen(0, '127.0.0.1');
+  } catch (error) {
+    // A refused startup still opened database and Redis connections.
+    await app.close().catch(() => undefined);
+    throw error;
+  }
   return { app, env };
 }

@@ -27,7 +27,9 @@ const app = await NestFactory.create<NestExpressApplication>(AppModule.forRoot(e
   bufferLogs: true,
 });
 configureApp(app);
-await app.listen(env.PORT);
+// Locally only this computer can reach the server; containers listen on all
+// interfaces behind their platform's network.
+await app.listen(env.PORT, env.APP_ENV === 'local' ? '127.0.0.1' : '0.0.0.0');
 
 // SIGTERM and SIGINT: stop taking jobs, let running jobs finish, close
 // connections, then exit 0.

@@ -32,7 +32,12 @@ export function canonicalJson(value: JsonValue): string {
   }
   if (typeof value === 'string') return serializeString(value);
   if (Array.isArray(value)) {
-    return `[${(value as readonly JsonValue[]).map(canonicalJson).join(',')}]`;
+    const items = value as readonly JsonValue[];
+    // `map` skips holes, which would serialize as `[1,,3]`: not JSON.
+    for (let index = 0; index < items.length; index += 1) {
+      if (!(index in items)) throw new CanonicalJsonError(`Array hole at index ${String(index)}`);
+    }
+    return `[${items.map(canonicalJson).join(',')}]`;
   }
   if (typeof value === 'object' && Object.getPrototypeOf(value) === Object.prototype) {
     const record = value as Readonly<Record<string, JsonValue>>;

@@ -27,7 +27,7 @@ Uygulama şu an geliştirme aşamasındadır; canlı kullanıcı yoktur.
 
 ## Geliştiriciler için
 
-- Gizli bilgiler (özel anahtar, kurtarma kelimesi, API anahtarı, şifre) koda, teste, commit'e, log'a ve dokümana yazılmaz. Her commit gitleaks ile taranır; CI bütün geçmişi tarar; GitHub gizli bilgi taraması ve itme koruması açıktır.
+- Gizli bilgiler (özel anahtar, kurtarma kelimesi, API anahtarı, şifre) koda, teste, commit'e, log'a ve dokümana yazılmaz. Her commit gitleaks ile taranır; CI bütün geçmişi tarar; depo GitHub'da açılırken gizli bilgi taraması ve itme koruması (push protection) da açılır.
 - Yapay zekâ servisinin anahtarı yalnız sunucuda durur; `NEXT_PUBLIC_` ile başlayıp gizli bilgi adı taşıyan bir değişken web derlemesini durdurur.
 - Sohbet içerikleri loglanmaz ve uygulama katmanında şifrelenir; `@yazesim/server` log alanlarını maskeler.
 - Bağımlılıklar tam sürüme sabitlenir, 24 saatten yeni sürümler kurulmaz, yayın kaynağı güveni düşen paketler reddedilir (`pnpm-workspace.yaml`).

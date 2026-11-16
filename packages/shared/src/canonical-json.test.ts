@@ -56,5 +56,8 @@ describe('canonicalJson (RFC 8785)', () => {
     );
     expect(() => canonicalJson(new Date(0) as unknown as JsonValue)).toThrow(CanonicalJsonError);
     expect(() => canonicalJson(10n as unknown as JsonValue)).toThrow(CanonicalJsonError);
+    // eslint-disable-next-line no-sparse-arrays -- the hole is what is tested
+    expect(() => canonicalJson([1, , 3] as unknown as JsonValue)).toThrow(/hole at index 1/u);
+    expect(() => canonicalJson(new Array<JsonValue>(2))).toThrow(CanonicalJsonError);
   });
 });

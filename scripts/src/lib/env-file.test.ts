@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { chmodSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -160,6 +160,17 @@ describe('ensureEnvFile', () => {
     ensureEnvFile({ examplePath: example, targetPath: target });
     expect(statSync(target).mode & 0o777).toBe(0o600);
   });
+
+  it.skipIf(process.platform === 'win32')(
+    'tightens an existing world-readable file before writing secrets into it',
+    () => {
+      writeFileSync(example, 'A=\n');
+      writeFileSync(target, 'A=\n', { mode: 0o644 });
+      chmodSync(target, 0o644);
+      ensureEnvFile({ examplePath: example, targetPath: target, generate: { A: () => 's' } });
+      expect(statSync(target).mode & 0o777).toBe(0o600);
+    },
+  );
 
   it('fails clearly when the example is missing', () => {
     expect(() => ensureEnvFile({ examplePath: example, targetPath: target })).toThrow(

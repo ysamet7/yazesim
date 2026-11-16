@@ -27,7 +27,9 @@ const app = await NestFactory.create<NestExpressApplication>(AppModule.forRoot(e
   bufferLogs: true,
 });
 configureApp(app, env);
-await app.listen(env.PORT);
+// Locally only this computer can reach the server; containers listen on all
+// interfaces behind their platform's network.
+await app.listen(env.PORT, env.APP_ENV === 'local' ? '127.0.0.1' : '0.0.0.0');
 
 // SIGTERM (the supervisor) and SIGINT (Ctrl+C): stop taking requests, run the
 // shutdown hooks (database, Redis), then exit 0. Nest's own

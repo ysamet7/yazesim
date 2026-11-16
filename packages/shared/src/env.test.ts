@@ -246,8 +246,29 @@ describe('findPublicSecretNames (golden rule 2)', () => {
     ).toEqual(['NEXT_PUBLIC_GEMINI_API_KEY', 'NEXT_PUBLIC_session_secret']);
   });
 
+  it.each([
+    'NEXT_PUBLIC_DATABASE_URL',
+    'NEXT_PUBLIC_REDIS_URL',
+    'NEXT_PUBLIC_SENTRY_DSN',
+    'NEXT_PUBLIC_AUTH_CLIENT_SECRET',
+    'NEXT_PUBLIC_GOOGLE_CREDENTIALS',
+    'NEXT_PUBLIC_WALLET_SEED',
+    'NEXT_PUBLIC_JWT',
+    'NEXT_PUBLIC_ADMIN_PASSPHRASE',
+    'NEXT_PUBLIC_SESSION_ID',
+  ])('flags %s', (name) => {
+    expect(findPublicSecretNames({ [name]: 'x' })).toEqual([name]);
+  });
+
   it('is empty for an ordinary public configuration', () => {
-    expect(findPublicSecretNames({ NEXT_PUBLIC_API_URL: 'x', PATH: '/bin' })).toEqual([]);
+    expect(
+      findPublicSecretNames({
+        NEXT_PUBLIC_API_URL: 'x',
+        NEXT_PUBLIC_SITE_URL: 'x',
+        NEXT_PUBLIC_APP_ENV: 'x',
+        PATH: '/bin',
+      }),
+    ).toEqual([]);
   });
 });
 

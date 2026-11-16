@@ -115,15 +115,17 @@ export function checkTools(): ToolStatus[] {
       `Foundry kurun ve sürümü sabitleyin: curl -L https://foundry.paradigm.xyz | bash && foundryup --install v${toolchain.foundry}` +
         (platform === 'win32' ? ' (Windows: Git Bash içinde çalıştırın)' : ''),
     ),
-    atLeast(
+    // Exact: .gitleaks.toml uses the newer `[[allowlists]]` syntax, and the
+    // hook must find what CI finds.
+    exact(
       'gitleaks',
       versionOf('gitleaks', ['version']),
-      [8, 19, 0],
-      installHint(
-        'winget install --id Gitleaks.Gitleaks -e',
+      toolchain.gitleaks,
+      `${installHint(
+        `winget install --id Gitleaks.Gitleaks -e --version ${toolchain.gitleaks}`,
         'brew install gitleaks',
         'https://github.com/gitleaks/gitleaks#installing',
-      ),
+      )} · sabit sürüm: https://github.com/gitleaks/gitleaks/releases/tag/v${toolchain.gitleaks}`,
     ),
   ];
 }

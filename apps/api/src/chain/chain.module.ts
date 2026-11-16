@@ -26,6 +26,9 @@ export class ChainStartupCheck implements OnApplicationBootstrap {
     try {
       actual = await this.client.getChainId();
     } catch {
+      // Phase 0 reads nothing from the chain, so starting is safe and readiness
+      // reports the outage. TODO(faz-5): chain readers must re-check the chain
+      // id before their first use instead of relying on this startup check.
       this.logger.warn('Chain RPC is unreachable at startup; readiness reports it');
       return;
     }

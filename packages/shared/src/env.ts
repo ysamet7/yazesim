@@ -309,8 +309,13 @@ export const webEnvSchema = z
 
 export type WebEnv = z.output<typeof webEnvSchema>;
 
-/** Name fragments that mark a secret (API keys, private keys, passwords, tokens). */
-const SECRET_NAME = /KEY|SECRET|TOKEN|PASSWORD|PASSWD|MNEMONIC|PEPPER|PRIVATE/u;
+/**
+ * Name fragments that mark a secret: keys, passwords and passphrases, tokens,
+ * credentials, seeds, session or auth material, and connection strings to the
+ * database or Redis. Public origins (`*_SITE_URL`, `*_API_URL`) stay allowed.
+ */
+const SECRET_NAME =
+  /KEY|SECRET|TOKEN|PASS|MNEMONIC|PEPPER|PRIVATE|CREDENTIAL|SEED|JWT|AUTH|SESSION|COOKIE|DSN|DATABASE|REDIS|POSTGRES/u;
 
 /**
  * Public (`NEXT_PUBLIC_*`) variables whose name looks like a secret. Next.js
