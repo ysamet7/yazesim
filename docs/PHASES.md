@@ -6,8 +6,8 @@ Yeni oturum buradan devam eder. Her adımın (commit'in) sonunda güncellenir. A
 
 - **Faz:** 0 — İskelet (plan onaylı, 2026-11-16)
 - **Dal:** `faz-0-iskelet` (yerel; GitHub'a henüz itilmedi)
-- **Son yapılan:** Ortak paketler, Docker yığını ve `pnpm bootstrap` (commit `10ddc7a`). Yerel yığın çalışıyor; veritabanı testleri gerçek Postgres'te geçti.
-- **Sıradaki adım:** Faz 0 adım 5 — `apps/api` (NestJS, `/api/v1/saglik`), sonra `apps/worker`, `apps/web`.
+- **Son yapılan:** API, işçi, web, sahte NoR, CI, güvenlik dosyaları ve dokümanlar (commit `427146b`). `pnpm verify` (tam) yerelde yeşil.
+- **Sıradaki adım:** Adım 14 — bağımsız inceleme ("kodu sen yazmadın"), bulguların düzeltilmesi; sonra adım 13 — Yusuf'a depo sahibi/adı sorulur, onayla GitHub'a itilir ve PR açılır.
 - **Bekleyen (Yusuf):** Gemini anahtarı (`.env`'e kendisi girecek); GitHub'da depo sahibi ve adı (adım 13'te sorulacak).
 - **Adım 13'te sorulacak:** Commit'ler GitHub'ın gizli e-posta adresiyle (noreply) atılıyor, gerçek e-posta görünmez; dokümanlarda geçen ilk adların (Yusuf, Habib bey) herkese açık depoda kalması onaylanacak.
 - **Paralel:** Faz 1 tasarım tuvali ayrı oturumda (yalnız `docs/design/` altına yazar; o dosyalar bu oturumun commit'lerine eklenmez).
@@ -18,22 +18,22 @@ Yeni oturum buradan devam eder. Her adımın (commit'in) sonunda güncellenir. A
 - [x] 2. Yerel git, ilk commit (`main`), `faz-0-iskelet` dalı
 - [x] 3. Monorepo kökü (pnpm, turbo, tsconfig, eslint, prettier, commitlint, husky)
 - [x] 4. Ortak paketler (config, shared, server, database, test-support)
-- [ ] 5. Uygulamalar (api, worker, web)
-- [ ] 6. Sahte NoR (contracts, 43114 koruması)
+- [x] 5. Uygulamalar (api, worker, web)
+- [x] 6. Sahte NoR (contracts, 43114 koruması)
 - [x] 7. Docker (postgres, redis, anvil)
-- [~] 8. Betikler (bootstrap, verify, infra, repo:guard hazır; sahte NoR yayını adım 6 ile eklenecek)
+- [x] 8. Betikler (bootstrap, verify, infra, repo:guard, chain:local)
 - [x] 9. `.env.example`
-- [ ] 10. Güvenlik dosyaları ve depo koruma testi
-- [ ] 11. CI
-- [ ] 12. Doküman ve sürüm notu
+- [x] 10. Güvenlik dosyaları ve depo koruma testi
+- [x] 11. CI (yerelde doğrulandı; GitHub'da ilk koşu adım 13'ten sonra)
+- [x] 12. Doküman ve sürüm notu (`docs/releases/faz-0.md`)
 - [ ] 13. Herkese açık depo (onayla)
 - [ ] 14. Bağımsız inceleme ve PR
 
 Notlar:
-- Commit'ler (`faz-0-iskelet`): `83c50cb` kök · `aa4fb33` shared · `2698945` server · `0ae7fd2` database + test-support · `10ddc7a` Docker + betikler.
+- Commit'ler (`faz-0-iskelet`): `83c50cb` kök · `aa4fb33` shared · `2698945` server · `0ae7fd2` database + test-support · `10ddc7a` Docker + betikler · `3b1ae49` api · `bf6ebdc` worker · `d83507a` web · `c8e35f1` sahte NoR · `427146b` CI + güvenlik + dokümanlar.
 - Yerel portlar NoRiba ile çakışmasın diye: Postgres 5433, Redis 6380, Anvil 8546, API 4200, işçi 4210, web 3200.
 - Ertelenenler: Playwright → Faz 1; sahte yapay zekâ sağlayıcısı → Faz 4 (`packages/ai` ile); geçici Anvil yardımcısı ve web zincir değişkenleri → Faz 5.
-- CI yazılınca `scripts/src/lib/versions.test.ts`'e CI sürüm sabitleme testi geri eklenecek; web eklenince Prettier Tailwind eklentisi geri gelecek.
+- Boyut bütçesi CI'a Faz 1'de (asıl arayüzle) eklenecek. LICENSE metnindeki hak sahibi adı ADR-010 için Habib bey'in onayını bekliyor.
 
 ## Sonraki fazlar (ayrıntı `docs/plans/yazesim-v1.md` §10)
 
