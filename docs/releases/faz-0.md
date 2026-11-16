@@ -34,5 +34,4 @@ Bu faz kullanıcıya görünen bir özellik getirmez; sonraki fazların üzerine
 
 ## Yusuf'tan beklenenler
 
-- GitHub'da herkese açık deponun sahibi ve adı (onayla açılacak).
 - Faz 1 tasarım yönü seçimi (ayrı oturumda hazırlanıyor).

@@ -9,7 +9,7 @@ NoRiba.Finance'e bağlı yapay zekâ sohbet ve simülasyon uygulaması. Kullanı
 Gerekenler: Node.js 24 LTS, pnpm (sürümü `package.json`'dan otomatik seçilir), Docker, Foundry 1.8.5, gitleaks, Git. Ayrıntı: [`docs/runbooks/YEREL-GELISTIRME.md`](docs/runbooks/YEREL-GELISTIRME.md).
 
 ```bash
-git clone --recurse-submodules <depo-adresi> yazesim
+git clone --recurse-submodules https://github.com/ysamet7/yazesim.git
 ```
 
 ```bash
