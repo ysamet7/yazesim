@@ -1,0 +1,21 @@
+# Secrets: env files never enter git; only the documented template does.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+.secrets/
+
+# Old code dropped in for review only. It may contain secrets and is never
+# committed, so it can never reach the public repository (README.md).
+/external/
+
+# Dependencies, build output, OS noise
+node_modules/
+dist/
+.next/
+.expo/
+coverage/
+*.log
+.DS_Store
