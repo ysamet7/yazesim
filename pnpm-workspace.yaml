@@ -37,6 +37,13 @@ peerDependencyRules:
     eslint-plugin-jsx-a11y>eslint: '10'
     eslint-plugin-react>eslint: '10'
 
+# Security fixes for transitive dependencies whose parent still pins a
+# vulnerable version. Remove an entry once the parent ships the fix.
+overrides:
+  # GHSA-7589-6fvf-x4pw (ReDoS, effect <= 3.22.0). @prisma/config pins
+  # effect 3.20.0, up to Prisma 8.0.0-rc.35 at least.
+  '@prisma/config>effect': 3.22.5
+
 # One version per shared dependency across the workspace.
 catalog:
   '@nestjs/cli': 12.0.13
