@@ -34,6 +34,7 @@ Rol tanımları koddan ayrı, sürümlü veridir: her rolün kategorisi, talimat
 ### Bağlam
 
 - **NoR:** Avalanche C-Chain'de canlı bir ERC-20 token'ı: `0x5782b954d9dc46168458a7e02db49b01e5a1a669`, 18 ondalık, sabit arz, `permit` yok. Trader Joe'da NoR/WAVAX havuzu var (küçük: 2026-11-14'te ~25 bin $).
+- **NoR Cüzdanı:** NoRiba ve YazeSim'in ortak cüzdanı; ayrı ve özel bir proje. YazeSim'e giriş ve NoR yükleme yalnız onunla (ADR-014). Bu açık depoya NoR Cüzdanı'ndan yalnız bağlantı paketi ve paketle gelen `README.md` girer; iç ayrıntıları ve notları yazılmaz. NoR Cüzdanı'nın klasöründe değişiklik yapılmaz.
 - **Kararların kaynağı:** NoRiba'nın özel deposundaki ADR-087 (`~/Desktop/noriba/docs/DECISIONS.md`); YazeSim'in kendi kararları `docs/DECISIONS.md`'de. NoRiba'nın kuralları ve yığını için `~/Desktop/noriba/CLAUDE.md` ve `docs/SPEC.md` okunabilir; NoRiba klasöründe değişiklik yapılmaz.
 - **Depo:** https://github.com/ysamet7/yazesim (herkese açık, 2026-11-17). `main` korumalı; her iş `main`'den açılan dalda ve PR ile, birleştirme Yusuf'un onayıyla.
 
@@ -41,7 +42,7 @@ Rol tanımları koddan ayrı, sürümlü veridir: her rolün kategorisi, talimat
 
 Adım adım ilerleme **`docs/PHASES.md`** dosyasındadır: her commit'ten sonra güncellenir, yeni oturum oradaki "Şu an" bölümünden devam eder. Oturumlarda öğrenilen pratik dersler `docs/runbooks/AGENT-NOTES.md`'de.
 
-Özet (2026-11-16): İnceleme, kararlar (`docs/DECISIONS.md` ADR-001…012) ve v1 planı (`docs/plans/yazesim-v1.md`) tamam. Faz 0 (iskelet) tamam ve `main`'de (PR #1). Faz 1 tasarım tuvali ayrı oturumda hazırlanıyor. Yapay zekâ anahtarı şimdilik KragaBridge aracı servisinden (ADR-013). Bekleyenler: Habib bey'in ADR-008 ve ADR-010 onayı; hukukçu soruları H1–H7 (`docs/DECISIONS.md` sonunda). Önceki denemenin inceleme raporu `external/inceleme-raporu.md` (git dışı).
+Özet (2026-11-16; kararlar 2026-11-25'e kadar): İnceleme, kararlar (`docs/DECISIONS.md` ADR-001…014) ve v1 planı (`docs/plans/yazesim-v1.md`) tamam. Faz 0 (iskelet) tamam ve `main`'de (PR #1). Faz 1 tasarım tuvali ayrı oturumda hazırlanıyor. Yapay zekâ anahtarı şimdilik KragaBridge aracı servisinden (ADR-013). Bekleyenler: Habib bey'in ADR-008 ve ADR-010 onayı; hukukçu soruları H1–H7 (`docs/DECISIONS.md` sonunda). Önceki denemenin inceleme raporu `external/inceleme-raporu.md` (git dışı).
 
 ## Altın kurallar (asla ihlal etme)
 

@@ -37,7 +37,7 @@ Gerekçe: Sürekli iyileşme + güvenlik ve fiyatların sessizce bozulmaması.
 Alternatifler: tam otomatik (güvenlik riski); yalnız rapor (yavaş gelişim).
 
 ### ADR-004 — Platform: önce web ve PWA; mağaza uygulamaları sonra · 2026-11-16
-Durum: Yusuf seçti (2026-11-16).
+Durum: Yusuf seçti (2026-11-16). 2026-11-25: Aşağıda sözü geçen cüzdan **NoR Cüzdanı**dır; kullanıcı onun içinden, YazeSim'i açmadan da kasaya NoR gönderebilir (ADR-014).
 Karar:
 - İlk sürüm **web uygulaması**; telefona kurulabilen PWA olarak mobilde uygulama gibi çalışır. Mobil önce tasarlanır.
 - Mağaza uygulamaları (Expo ile iOS ve Android) ikinci aşamada. Apple'ın 3.1.1 kuralı (dijital hizmetin kripto parayla uygulama içinde açılması yasak) ve Google Play'in ödeme kuralı nedeniyle mağaza uygulamasında NoR yükleme ekranı olmaz. Yusuf'un yönü: NoR yükleme, NoRiba'nın ayrı yazılacak cüzdanı (NoRiba ADR-086) içinden YazeSim hesabına yapılır; ek çözüm web sürümünden sonra araştırılır.
@@ -66,7 +66,7 @@ Gerekçe: Kullanıcıya öngörülebilir fiyat; havuz küçük (~25 bin $) oldu�
 Alternatifler: yöneticinin sabit kuru (piyasadan kopar); her mesajda anlık fiyat (manipülasyon, öngörülemez fiyat).
 
 ### ADR-007 — Ödeme: ön ödemeli kredi, NoR kasaya doğrudan gönderilir · 2026-11-16
-Durum: Yusuf seçti (2026-11-16).
+Durum: Yusuf seçti (2026-11-16). **2026-11-25: ADR-014 ile netleşti:** kasaya gelen her NoR aktarımı, nereden başlatılmış olursa olsun, gönderen adrese yazılır; hesabı olmayan adresin NoR'u o adres ilk kez giriş yapınca yazılır; yükleme NoR Cüzdanı ile yapılır, Fuji denemesi başka cüzdanla.
 Karar:
 - Kullanıcı cüzdanından YazeSim kasa adresine NoR gönderir (tek işlem). Gönderen cüzdan imzayla hesaba bağlı olduğu için zincir izleyici yüklemeyi otomatik tanır ve yeterli onaydan sonra krediyi yazar. Yeni akıllı kontrat yazılmaz.
 - Hesaba bağlı olmayan bir cüzdandan gelen yükleme bekletilir; kullanıcı o cüzdanı imzayla hesabına bağlayınca kredisi yazılır.
@@ -86,7 +86,7 @@ Gerekçe: Toplanan NoR dolar faturasını karşılayamaz; fatura tavanlı ve ön
 Alternatifler: NoR'u yakmak (arz azalır, hazine yeniden kullanamaz).
 
 ### ADR-009 — Giriş: cüzdanla imza ve e-posta · 2026-11-16
-Durum: Yusuf seçti (2026-11-16).
+Durum: Yusuf seçti (2026-11-16). **2026-11-25: ADR-014 ile değişti:** e-postayla giriş ve gömülü cüzdan kalktı, giriş yalnız NoR Cüzdanı ile. İmzayla giriş (SIWE), oturum ve NoRiba üyeliği maddeleri geçerli.
 Karar:
 - Cüzdanla imzalayarak giriş (SIWE, EIP-4361): NoRiba'da kullanılan cüzdanın aynısı çalışır.
 - E-postayla giriş: arka planda gömülü cüzdan oluşur; sağlayıcı NoRiba'nın seçtiğiyle aynı (NoRiba K6: MetaMask Embedded Wallets, yedek Privy), ücretsiz katman sınırında kalınır.
@@ -139,6 +139,25 @@ Karar:
 Gerekçe: Yusuf'un elindeki anahtar; geliştirmeye beklemeden başlamak.
 Alternatifler: doğrudan Google Gemini anahtarı (daha hızlı olması beklenir, ölçülmedi); servis sağlayıcısına gecikmeyi sormak.
 Etkilenen: ADR-005 (ilk uyarlayıcı ve anahtar kaynağı), H2.
+
+### ADR-014 — Giriş ve NoR yükleme yalnız NoR Cüzdanı ile · 2026-11-25
+Durum: Yusuf'un kararı (2026-11-24): "YazeSim'e giriş NoR Cüzdanı ile olacak; harcamalar NoR Cüzdanı'ndan kasaya gönderilen NoR'a göre olacak." E-postalı girişin kalkıp kalkmayacağı 2026-11-25'te soruldu; Yusuf "Yalnız NoR Cüzdanı" seçeneğini seçti.
+Karar:
+- **Giriş yalnız NoR Cüzdanı ile.** Giriş ekranında tek düğme: "NoR Cüzdanı ile giriş". Cüzdan kendi sitesinde küçük bir pencerede açılır; kullanıcı bağlanır ve sunucumuzun ürettiği giriş metnini imzalar (SIWE, EIP-4361; `personal_sign`). Tipli veri imzası (EIP-712) kullanılmaz. Anahtar, şifre ve onaylar cüzdanın penceresinde kalır; YazeSim yalnız adresi ve imzayı görür. Hesap, cüzdan adresiyle tanınır.
+- **E-postayla giriş ve gömülü cüzdan servisi kalkar** (ADR-009'un e-posta maddesi). Dış cüzdan servisine, onun ücretsiz katman sınırına ve saklanacak e-posta adresine gerek kalmaz.
+- **Başka cüzdanlar** (MetaMask gibi tarayıcı cüzdanları) yalnız deneme ortamında bir ayarla açılır; canlıda kapalıdır. Giriş kodu genel cüzdan arayüzü (EIP-1193) üstüne yazılır; böylece NoR Cüzdanı'nın desteklemediği Fuji'de deneme başka bir cüzdanla yapılabilir.
+- **Bağlantı paketi:** NoR Cüzdanı'nın küçük bağlantı paketi (`nor-cuzdan-connect`, ilk sürüm 0.1.0) web uygulamasına sürüm numaralı kopya olarak girer: modül, tip dosyaları ve paketle gelen `README.md`, değiştirilmeden. Yeni sürüm bilinçli olarak, ayrı bir commit'le alınır. Paket başka siteden bir şey yüklemez. NoR Cüzdanı ayrı ve özel bir projedir: bu açık depoya paketin ve README'sinin dışında NoR Cüzdanı'nın iç ayrıntıları yazılmaz.
+- **NoR yükleme:** Yükleme, NoR Cüzdanı'ndan kasaya doğrudan NoR aktarımıdır (ADR-007). YazeSim'in Cüzdan ekranı aktarımı başlatır, kullanıcı cüzdan penceresinde onaylar. Kullanıcı YazeSim'i açmadan, cüzdanın içinden de kasaya NoR gönderebilir. Bu yüzden:
+  - Kasaya gelen **her** NoR aktarımı, nereden başlatılmış olursa olsun, gönderen adrese kredi olarak yazılır; yalnız YazeSim'in kendi sayfasından başlatılanlar değil.
+  - Henüz YazeSim hesabı olmayan adresten gelen NoR bekletilir; o adres ilk kez giriş yaptığında hesaba yazılır.
+  - Kredi NoR'a geri çevrilmez.
+- **Ağ:** NoR Cüzdanı yalnız Avalanche ana ağında ve kendi yerel kopyasında çalışır; Fuji'yi desteklemez. NoR Cüzdanı ile deneme yerel zincirde (Anvil), Fuji denemesi başka cüzdanla yapılır.
+- **Telefon:** Cüzdan penceresi telefonda yeni sekmede açılır. Ana ekrana eklenmiş uygulamada (özellikle iPhone) bu bağ kopabilir; o durumda kullanıcıya siteyi tarayıcıda açmasını söyleyen bir not gösterilir. Mağaza uygulamaları (ADR-004) için bağlantı yolu sonra değerlendirilir.
+- **NoR Cüzdanı'na iletilecekler** (Yusuf aracılığıyla, belli olunca): canlı kasa adresi; YazeSim'in tam kökenleri (`https://` ile, yol olmadan; web ve ana ekrana eklenen uygulama aynı kökendeyse tek satır); varsa en az yükleme tutarı. Cüzdan yalnız listesindeki kökenlere bağlanır.
+Gerekçe: Yusuf'un kararı; tek cüzdan ve tek giriş yolu sade ve anlaşılırdır; NoRiba ile aynı cüzdan kullanılır; dış servis, ücret ve e-posta verisi olmaz. Cüzdanın kendi yükleme sayfası olduğu için krediyi yalnız kendi sayfamızdan başlatılan yüklemelere yazmak, kullanıcının gönderdiği NoR'u karşılıksız bırakırdı.
+Alternatifler: NoR Cüzdanı önde, başka cüzdanlar canlıda da açık; NoR Cüzdanı + e-posta (ADR-009 olduğu gibi).
+Sonuç: E-posta doğrulaması kalktığı için hoş geldin kredisinin çok sayıda adresle kötüye kullanılmasına karşı önlem Faz 3 planında yeniden ele alınır (cüzdan imzası, IP ve cihaz hız sınırı, günlük bütçe sigortası).
+Etkilenen: ADR-004 (yükleme cüzdanı), ADR-007 (her aktarım kuralı ve bekletme), ADR-009 (e-posta girişi kalktı), plan §2.1, §3, §4, §5.3, §5.5, §9, §10 (Faz 2 ve 5, §10.1), §12–14.
 
 ---
 
