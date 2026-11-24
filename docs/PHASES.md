@@ -4,9 +4,13 @@ Yeni oturum buradan devam eder. Her adımın (commit'in) sonunda güncellenir. A
 
 ## Şu an
 
+- **Yarın buradan devam (2026-11-25 gün sonu):** Hiçbir şey birleştirilmedi. (1) PR #9 (`fix/effect-audit`, bağımlılık denetimi düzeltmesi): gün sonunda denetimlerin 3/4'ü yeşildi, biri sürüyordu; yeşilse birleştirilir. (2) Sonra PR #8 (`claude/nor-cuzdan-plan-0fb5cf`, ADR-014 ve plan §10.1) ana dalla güncellenir (`main` güncel dal şartı istiyor), denetimleri yeşil olunca birleştirilir. Yusuf 2026-11-25'te ikisinin de bu sırayla birleştirilmesini onayladı; yarın başlamadan Yusuf'a bir kez daha sorulur. Açık Dependabot PR'ları (#3–#7) da birleşmeden önce ana dalla güncellenmeli.
 - **Faz:** 0 — İskelet **tamam** (PR #1 `main`'e birleştirildi, 2026-11-17, birleştirme commit'i `3842432`; GitHub CI 4/4 yeşil).
 - **Depo:** https://github.com/ysamet7/yazesim (herkese açık). Yeni iş her zaman `main`'den açılan bir dalda ve PR ile.
-- **Sıradaki adım:** Faz 1 (tasarım yönü seçimi gelince ADR olarak yazılır, `docs/plans/faz-1.md` hazırlanır) ve Faz 2 (hesap ve giriş) planı. İkisi paralel yürüyebilir.
+- **Sıradaki adım:** Faz 1 (tasarım yönü seçimi gelince ADR olarak yazılır, `docs/plans/faz-1.md` hazırlanır) ve Faz 2 (hesap ve giriş) planı. İkisi paralel yürüyebilir. Faz 2 planı `docs/plans/yazesim-v1.md` §10.1'deki NoR Cüzdanı gerekliliklerinden başlar.
+- **NoR Cüzdanı (ADR-014, 2026-11-25, commit `9a381c4`, dal `claude/nor-cuzdan-plan-0fb5cf`):** Giriş ve NoR yükleme yalnız NoR Cüzdanı ile; e-postayla giriş ve gömülü cüzdan kalktı (Yusuf seçti). Kasaya gelen her NoR aktarımı gönderen adrese yazılır; hesabı olmayan adresin NoR'u ilk girişte yazılır. NoR Cüzdanı Fuji'yi desteklemez: onunla deneme yerel zincirde, Fuji denemesi başka cüzdanla. Bağlantı paketi (`nor-cuzdan-connect` 0.1.0) ve README'si Faz 2'de sürüm numaralı kopya olarak girer; NoR Cüzdanı'nın başka iç ayrıntısı bu depoya yazılmaz.
+- **NoR Cüzdanı'na iletilecek (Yusuf aracılığıyla, belli olunca):** canlı kasa adresi, YazeSim'in tam kökenleri (`https://`, yol yok), varsa en az yükleme tutarı.
+- **Bağımlılık denetimi (2026-11-25):** Prisma'nın sabitlediği `effect` 3.20.0 için yüksek seviyeli uyarı (GHSA-7589-6fvf-x4pw) CI'daki "Dependency audit" işini kırdı. `pnpm-workspace.yaml`'da `overrides` ile `@prisma/config>effect` 3.22.5'e zorlandı (PR #9); Prisma düzeltmeyi yayınlayınca bu satır silinir. Kalan orta seviyeli `minimatch` uyarısı (lint araçlarında) denetimi kırmaz.
 - **Yapay zekâ anahtarı:** Geldi ve test edildi (2026-11-17, ADR-013): KragaBridge aracı servisi, yalnız Gemini modelleri, ilk kelime 4–21 sn. Anahtar şimdilik kök `.env`'de (`AI_API_KEY`); Faz 4'te uyarlayıcı yazılınca `apps/api/.env`'e taşınır.
 - **Bekleyen (Yusuf):** Faz 1 tasarım yönü seçimi (Habib bey için sunum hazır, tasarım oturumunda).
 - **GitHub ayarları:** gizli bilgi taraması ve itme koruması, özel güvenlik bildirimi, Dependabot uyarıları açık. `main` korumalı: yalnız PR ile, 4 CI işi yeşil olmadan birleştirilemez, zorla itme ve silme kapalı, yöneticiye de uygulanır. Commit'ler GitHub'ın gizli (noreply) e-postasıyla.
@@ -22,7 +26,7 @@ Yeni oturum buradan devam eder. Her adımın (commit'in) sonunda güncellenir. A
 - [x] 6. Sahte NoR (contracts, 43114 koruması)
 - [x] 7. Docker (postgres, redis, anvil)
 - [x] 8. Betikler (bootstrap, verify, infra, repo:guard, chain:local)
-- [x] 9. `.env.example` (model adları Faz 4'te, oturum gizleri ve gömülü cüzdan kimliği Faz 2'de, onları okuyan kodla eklenecek: şablon ↔ şema eşitlik testi kullanılmayan değişkene izin vermez)
+- [x] 9. `.env.example` (model adları Faz 4'te, oturum gizleri ve NoR Cüzdanı adresi Faz 2'de, onları okuyan kodla eklenecek; gömülü cüzdan kimliği ADR-014 ile gereksiz: şablon ↔ şema eşitlik testi kullanılmayan değişkene izin vermez)
 - [x] 10. Güvenlik dosyaları ve depo koruma testi
 - [x] 11. CI (yerelde doğrulandı; GitHub'da ilk koşu PR'da)
 - [x] 12. Doküman ve sürüm notu (`docs/releases/faz-0.md`)
@@ -42,10 +46,10 @@ Notlar:
 | Faz | Konu | Durum |
 |---|---|---|
 | 1 | Tasarım yönü | Ayrı oturumda tuval hazırlanıyor |
-| 2 | Hesap ve giriş | Bekliyor |
+| 2 | Hesap ve giriş (NoR Cüzdanı ile, §10.1) | Bekliyor |
 | 3 | Kredi defteri ve fiyat | Bekliyor |
 | 4 | Rol kataloğu ve sohbet | Bekliyor |
-| 5 | NoR yükleme | Bekliyor |
+| 5 | NoR yükleme (NoR Cüzdanı ile, §10.1) | Bekliyor |
 | 6 | Yönetim ve güvenlik | Bekliyor |
 | 7 | Kendini geliştirme | Bekliyor |
 | 8 | Katalog ve cila | Bekliyor |
